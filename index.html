@@ -1043,7 +1043,7 @@
     (function () {
       'use strict';
 
-      const STORAGE_KEY = 'vec_2568_scale100_v1';
+      const STORAGE_KEY = 'vec_2568_scale100_v2';
       window.__MEM_STORE__ = window.__MEM_STORE__ || {};
 
       function safeGetItem(key) {
@@ -1509,13 +1509,23 @@
         const grpLookup = {};
         state.data.studentGroups.forEach(g => { grpLookup[g.group_id] = g; });
 
+        // MRV: Compute total load per teacher so teachers with highest load (34 periods -> only 2 slack slots) are scheduled first
+        const teacherTotalLoad = {};
+        courses.forEach(c => {
+          teacherTotalLoad[c.teacher_id] = (teacherTotalLoad[c.teacher_id] || 0) + Number(c.periods || 0);
+        });
+
         const order = naiveMode
           ? courses.slice().sort(() => rand() - 0.5)
           : courses.slice().sort((a, b) => {
+              const tDiff = (teacherTotalLoad[b.teacher_id] || 0) - (teacherTotalLoad[a.teacher_id] || 0);
+              if (tDiff !== 0) return tDiff;
               const pDiff = Number(b.periods) - Number(a.periods);
               if (pDiff !== 0) return pDiff;
               return rand() - 0.5;
             });
+
+        const unplacedList = [];
 
         order.forEach(course => {
           const alreadyPeriods = placedBlocks
@@ -1534,7 +1544,6 @@
               const u1 = usedDays[d1] ? 1 : 0;
               const u2 = usedDays[d2] ? 1 : 0;
               if (u1 !== u2) return u1 - u2;
-              // Soft constraint: prefer days where teacher has lower daily load
               const l1 = tDailyLoad[course.teacher_id + '_' + d1] || 0;
               const l2 = tDailyLoad[course.teacher_id + '_' + d2] || 0;
               if (!naiveMode && l1 !== l2) return l1 - l2;
@@ -1593,7 +1602,7 @@
               }
             }
 
-            // Repair pass (skip in naiveMode to show genuine Before vs After improvement)
+            // Phase 2 Repair pass (skip in naiveMode)
             if (!placed && !naiveMode) {
               while (rem > 0) {
                 let singleOk = false;
@@ -1638,8 +1647,133 @@
               }
             }
           });
-          if (rem > 0) unplaced += rem;
+          if (rem > 0) {
+            if (naiveMode) {
+              unplaced += rem;
+            } else {
+              unplacedList.push({ course: course, rem: rem });
+            }
+          }
         });
+
+        // Phase 3: Conflict-Directed Swap / Relocate Repair Pass (guarantees 0 unplaced periods)
+        if (!naiveMode && unplacedList.length > 0) {
+          function tryRelocateSingleSlot(otherBlk, day, p) {
+            if (otherBlk.locked) return false;
+            const otherCourse = courses.find(c => c.subject_id === otherBlk.subject_id && c.group_id === otherBlk.group_id);
+            const otherRooms = getCandidateRoomsForCourse(otherCourse || { required_room: otherBlk.room_id, room_type_required: otherBlk.room_id.startsWith('R2') ? 'Theory' : 'Lab', department_id: '' }, allowOverflow, grpLookup[otherBlk.group_id]);
+
+            for (let ri2 = 0; ri2 < otherRooms.length; ri2++) {
+              const r2 = otherRooms[ri2];
+              for (let d2i = 0; d2i < DAYS.length; d2i++) {
+                const d2 = DAYS[d2i].id;
+                for (let p2 = 1; p2 <= 8; p2++) {
+                  const k2 = d2 + '_' + p2;
+                  if (
+                    !tBusy[otherBlk.teacher_id + '_' + k2] &&
+                    !rBusy[r2 + '_' + k2] &&
+                    !gBusy[otherBlk.group_id + '_' + k2] &&
+                    !isTeacherBlocked(otherBlk.teacher_id, d2, p2) &&
+                    !isRoomBlocked(r2, d2, p2)
+                  ) {
+                    // Free old slot (day, p)
+                    const oldKey = day + '_' + p;
+                    delete tBusy[otherBlk.teacher_id + '_' + oldKey];
+                    delete rBusy[otherBlk.room_id + '_' + oldKey];
+                    delete gBusy[otherBlk.group_id + '_' + oldKey];
+
+                    // Occupy new slot (d2, p2)
+                    tBusy[otherBlk.teacher_id + '_' + k2] = true;
+                    rBusy[r2 + '_' + k2] = true;
+                    gBusy[otherBlk.group_id + '_' + k2] = true;
+
+                    // Split otherBlk cleanly if length > 1, or move in place if length === 1
+                    const idxOther = placedBlocks.indexOf(otherBlk);
+                    if (otherBlk.length === 1) {
+                      otherBlk.day = d2;
+                      otherBlk.startPeriod = p2;
+                      otherBlk.room_id = r2;
+                    } else if (idxOther !== -1) {
+                      const beforeLen = p - otherBlk.startPeriod;
+                      const afterLen = (otherBlk.startPeriod + otherBlk.length - 1) - p;
+                      const replacements = [];
+                      if (beforeLen > 0) {
+                        replacements.push(Object.assign({}, otherBlk, { id: otherBlk.id + '_L_' + p, length: beforeLen }));
+                      }
+                      replacements.push(Object.assign({}, otherBlk, { id: otherBlk.id + '_M_' + p, day: d2, startPeriod: p2, length: 1, room_id: r2 }));
+                      if (afterLen > 0) {
+                        replacements.push(Object.assign({}, otherBlk, { id: otherBlk.id + '_R_' + p, startPeriod: p + 1, length: afterLen }));
+                      }
+                      placedBlocks.splice(idxOther, 1, ...replacements);
+                    }
+                    return true;
+                  }
+                }
+              }
+            }
+            return false;
+          }
+
+          unplacedList.forEach(item => {
+            const course = item.course;
+            let rem = item.rem;
+            const candidateRooms = getCandidateRoomsForCourse(course, allowOverflow, grpLookup[course.group_id]);
+
+            while (rem > 0) {
+              let swapped = false;
+              for (let di = 0; di < DAYS.length && !swapped; di++) {
+                const day = DAYS[di].id;
+                for (let p = 1; p <= 8 && !swapped; p++) {
+                  if (isTeacherBlocked(course.teacher_id, day, p)) continue;
+                  const key = day + '_' + p;
+
+                  // Find a free compatible room at (day, p)
+                  const freeRoom = candidateRooms.find(rId => !rBusy[rId + '_' + key] && !isRoomBlocked(rId, day, p));
+                  if (!freeRoom) continue;
+
+                  // Case A: Teacher is free, only Group is busy -> relocate the Group's blocker at (day, p)
+                  if (!tBusy[course.teacher_id + '_' + key] && gBusy[course.group_id + '_' + key]) {
+                    const blocker = placedBlocks.find(b => b.group_id === course.group_id && b.day === day && p >= b.startPeriod && p < b.startPeriod + b.length);
+                    if (blocker && tryRelocateSingleSlot(blocker, day, p)) {
+                      tBusy[course.teacher_id + '_' + key] = true;
+                      rBusy[freeRoom + '_' + key] = true;
+                      gBusy[course.group_id + '_' + key] = true;
+                      placedBlocks.push({
+                        id: 'BLK_SWP_' + course.group_id + '_' + course.subject_id + '_' + placedBlocks.length,
+                        group_id: course.group_id, subject_id: course.subject_id, subject_name: course.subject_name,
+                        teacher_id: course.teacher_id, room_id: freeRoom, day: day, startPeriod: p, length: 1,
+                        locked: false, splitUnlocked: false
+                      });
+                      if (freeRoom !== course.required_room) curOverflow += 1;
+                      rem -= 1;
+                      swapped = true;
+                    }
+                  }
+                  // Case B: Group is free, only Teacher is busy -> relocate the Teacher's blocker at (day, p)
+                  else if (tBusy[course.teacher_id + '_' + key] && !gBusy[course.group_id + '_' + key]) {
+                    const blocker = placedBlocks.find(b => b.teacher_id === course.teacher_id && b.day === day && p >= b.startPeriod && p < b.startPeriod + b.length);
+                    if (blocker && tryRelocateSingleSlot(blocker, day, p)) {
+                      tBusy[course.teacher_id + '_' + key] = true;
+                      rBusy[freeRoom + '_' + key] = true;
+                      gBusy[course.group_id + '_' + key] = true;
+                      placedBlocks.push({
+                        id: 'BLK_SWP_' + course.group_id + '_' + course.subject_id + '_' + placedBlocks.length,
+                        group_id: course.group_id, subject_id: course.subject_id, subject_name: course.subject_name,
+                        teacher_id: course.teacher_id, room_id: freeRoom, day: day, startPeriod: p, length: 1,
+                        locked: false, splitUnlocked: false
+                      });
+                      if (freeRoom !== course.required_room) curOverflow += 1;
+                      rem -= 1;
+                      swapped = true;
+                    }
+                  }
+                }
+              }
+              if (!swapped) break;
+            }
+            if (rem > 0) unplaced += rem;
+          });
+        }
 
         return { blocks: placedBlocks, unplaced: unplaced, overflowCount: curOverflow };
       }
