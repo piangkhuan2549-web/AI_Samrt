@@ -258,8 +258,8 @@ class AIAutoScheduler:
                 return False
         return True
 
-    def solve(self, max_restarts: int = 300) -> List[ScheduleSlot]:
-        MAX_DAILY_LOAD = 8  # allow up to 8 periods per day (including after lunch)
+    def solve(self, max_restarts: int = 1200) -> List[ScheduleSlot]:
+        MAX_DAILY_LOAD = 7  # allow up to 7 periods per day (excluding lunch)
         best_schedule: List[ScheduleSlot] = []
         target_total = sum(s.total_periods for s in self.subjects)
 
@@ -335,6 +335,9 @@ class AIAutoScheduler:
                         found_single = False
                         for day in DAYS:
                             for p in range(1, PERIODS_PER_DAY + 1):
+                                if p == 4:
+                                    # Skip period 4 to avoid crossing lunch break
+                                    continue
                                 if self.is_available(
                                     subj, room_id, day, p, 1,
                                     busy_teacher, busy_room, busy_group
