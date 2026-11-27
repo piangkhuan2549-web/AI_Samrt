@@ -1554,7 +1554,7 @@
               const roomId = candidateRooms[ri];
               for (let di = 0; di < dayOrder.length && !placed; di++) {
                 const day = dayOrder[di];
-                if (!naiveMode && (tDailyLoad[course.teacher_id + '_' + day] || 0) + len > 7) continue;
+                if (!naiveMode && (tDailyLoad[course.teacher_id + '_' + day] || 0) + len > 8) continue;
                 const halves = [[1, 2, 3, 4], [5, 6, 7, 8]];
                 for (let hi = 0; hi < halves.length && !placed; hi++) {
                   const half = halves[hi];
