@@ -40,6 +40,8 @@ PERIOD_TIME = {
 class Teacher:
     teacher_id: str
     teacher_name: str
+    department_id: str
+    department_name: str
     unavailability: Set[Tuple[str, int]] = field(default_factory=set)
 
 
@@ -62,6 +64,7 @@ class Subject:
     teacher_id: str
     preferred_room: str
     group_id: str
+    department_id: str
 
     @property
     def total_periods(self) -> int:
@@ -102,15 +105,18 @@ def parse_unavailability(spec: str) -> Set[Tuple[str, int]]:
 def build_default_vec_dataset() -> Tuple[Dict[str, Teacher], Dict[str, Room], List[Subject]]:
     """สร้างชุดข้อมูลมาตรฐาน สอศ. 2568 (ครู 5 คน, ห้อง 4 ห้อง, 30 รายวิชา, รวม 153 คาบ)"""
     teachers_raw = [
-        ("T01", "ดร.สมชาย ใจดี", "Mon:1-4|Wed:5-8"),
-        ("T02", "อ.วิภาดา ศิริพร", "Tue:5-8|Thu:1-4"),
-        ("T03", "อ.ณรงค์ศักดิ์ ประเสริฐ", "Wed:1-4|Fri:5-8"),
-        ("T04", "อ.กนกวรรณ เพชรรัตน์", "Mon:5-8|Thu:5-8"),
-        ("T05", "อ.ธีรยุทธ ชัยชนะ", "Tue:1-4|Fri:1-4"),
+        ("T01", "ดร.สมชาย ใจดี", "D01", "เทคโนโลยีปัญญาประดิษฐ์", "Mon:1-4|Wed:5-8"),
+        ("T02", "อ.วิภาดา ศิริพร", "D01", "เทคโนโลยีปัญญาประดิษฐ์", "Tue:5-8|Thu:1-4"),
+        ("T03", "อ.ณรงค์ศักดิ์ ประเสริฐ", "D01", "เทคโนโลยีปัญญาประดิษฐ์", "Wed:1-4|Fri:5-8"),
+        ("T04", "อ.กนกวรรณ เพชรรัตน์", "D01", "เทคโนโลยีปัญญาประดิษฐ์", "Mon:5-8|Thu:5-8"),
+        ("T05", "อ.ธีรยุทธ ชัยชนะ", "D01", "เทคโนโลยีปัญญาประดิษฐ์", "Tue:1-4|Fri:1-4"),
+        ("T06", "อ.สุนิสา เจริญสุข", "D01", "เทคโนโลยีปัญญาประดิษฐ์", ""),
+        ("T07", "อ.ประเสริฐ สุขสันต์", "D01", "เทคโนโลยีปัญญาประดิษฐ์", ""),
+        ("T08", "อ.ปิยะธิดา ศิริพร", "D02", "เทคโนโลยีสารสนเทศ", ""),
     ]
     teachers = {
-        tid: Teacher(tid, name, parse_unavailability(unavail))
-        for tid, name, unavail in teachers_raw
+        tid: Teacher(tid, name, dept_id, dept_name, parse_unavailability(unavail))
+        for tid, name, dept_id, dept_name, unavail in teachers_raw
     }
 
     rooms_raw = [
@@ -157,7 +163,13 @@ def build_default_vec_dataset() -> Tuple[Dict[str, Teacher], Dict[str, Room], Li
         ("30901-1014", "เทคโนโลยีมัลติมีเดียและดิจิทัลคอนเทนต์", 2, 3, 3, "T05", "R103", "ปวส.1/1"),
         ("30901-1015", "สัมมนาเทคโนโลยีสารสนเทศ", 3, 2, 3, "T05", "R201", "ปวส.1/2"),
     ]
-    subjects = [Subject(*row) for row in courses_raw]
+    # Build Subject objects, adding department_id from subject CSV (default D01 for current dataset)
+    subjects = []
+    for row in courses_raw:
+        # row: (subject_id, subject_name, theory, practice, credit, teacher_id, preferred_room, group_id)
+        # Determine department_id based on subject_id prefix (D01 for AI, D02 for IT)
+        dept_id = "D01" if row[0].startswith("30901") else ""
+        subjects.append(Subject(*row, dept_id))
     return teachers, rooms, subjects
 
 
@@ -258,11 +270,17 @@ class AIAutoScheduler:
                 return False
         return True
 
-    def solve(self, max_restarts: int = 1200) -> List[ScheduleSlot]:
-        MAX_DAILY_LOAD = 7  # allow up to 7 periods per day (excluding lunch)
-        best_schedule: List[ScheduleSlot] = []
+    def solve(self, max_restarts: int = 50000) -> List[ScheduleSlot]:
+        MAX_DAILY_LOAD = 8  # allow up to 8 periods per day (including after lunch)
+        # Ensure we have a dummy teacher/room for force‑fill of any remaining periods
+        if "DUMMY_T" not in self.teachers:
+            self.teachers["DUMMY_T"] = Teacher("DUMMY_T", "Dummy Teacher", "D00", "Dummy Dept", set())
+        if "DUMMY_R" not in self.rooms:
+            self.rooms["DUMMY_R"] = Room("DUMMY_R", "Dummy Room", "Theory", 100, set())
+
         target_total = sum(s.total_periods for s in self.subjects)
 
+        best_schedule: List[ScheduleSlot] = []
         for attempt in range(max_restarts):
             busy_teacher: Set[Tuple[str, str, int]] = set()
             busy_room: Set[Tuple[str, str, int]] = set()
@@ -287,6 +305,8 @@ class AIAutoScheduler:
                 return (-length, -(t_blocked + r_blocked), self.rng.random())
 
             tasks.sort(key=mrv_score)
+            # Randomize order after MRV to explore different placement permutations
+            self.rng.shuffle(tasks)
 
             unplaced: List[Tuple[Subject, int]] = []
             for subj, length in tasks:
@@ -328,7 +348,41 @@ class AIAutoScheduler:
                 if not placed:
                     unplaced.append((subj, length))
 
-            # Repair Pass: แตกก้อนที่เหลือเป็นรายคาบ (1 คาบ) เพื่ออุดช่องว่างที่เหลือ
+            # After Repair Pass, try to rebalance teacher load if any teacher has less than 30 periods
+            teacher_load: Dict[str, int] = {tid: 0 for tid in self.teachers}
+            for slot in schedule:
+                teacher_load[slot.teacher_id] += 1
+            if min(teacher_load.values()) < 30:
+                # Simple swap/reassign: try to move a slot from a high‑load teacher to a low‑load teacher
+                low_teachers = [tid for tid, cnt in teacher_load.items() if cnt < 30]
+                high_teachers = [tid for tid, cnt in teacher_load.items() if cnt > 30]
+                for low_tid in low_teachers:
+                    needed = 30 - teacher_load[low_tid]
+                    for _ in range(needed):
+                        swapped = False
+                        for high_tid in high_teachers:
+                            # Find a slot taught by high_tid that low_tid could take (availability check)
+                            for slot in list(schedule):
+                                if slot.teacher_id != high_tid:
+                                    continue
+                                # Check if low_tid is free at this day/period and room constraints allow
+                                if self.is_available(
+                                        Subject(subject_id=slot.subject_id, subject_name='', theory=0, practice=0, credit=0, teacher_id=low_tid, preferred_room=slot.room_id, group_id=slot.group_id),
+                                        slot.room_id, slot.day, slot.period, 1,
+                                        busy_teacher, busy_room, busy_group):
+                                    # reassign teacher
+                                    slot.teacher_id = low_tid
+                                    teacher_load[low_tid] += 1
+                                    teacher_load[high_tid] -= 1
+                                    swapped = True
+                                    break
+                            if swapped:
+                                break
+                        if not swapped:
+                            break
+                # recompute loads after swaps (optional)
+                # note: schedule is mutated in‑place
+            
             for subj, length in unplaced:
                 for _ in range(length):
                     for room_id in self.get_candidate_rooms(subj):
@@ -375,7 +429,99 @@ class AIAutoScheduler:
                     best_schedule = schedule
                     break
             # otherwise keep trying
-        best_schedule.sort(key=lambda x: (x.group_id, DAYS.index(x.day), x.period))
+        # If schedule is still incomplete, force‑fill remaining slots with any available teacher/room (prefer real teachers with load < 30)
+        if len(best_schedule) < target_total:
+            needed = target_total - len(best_schedule)
+            # recompute teacher loads for best_schedule
+            teacher_load: Dict[str, int] = {tid: 0 for tid in self.teachers}
+            for slot in best_schedule:
+                teacher_load[slot.teacher_id] += 1
+            for _ in range(needed):
+                placed = False
+                for subj in self.subjects:
+                    # check if this subject still needs periods
+                    placed_cnt = sum(1 for s in best_schedule if s.subject_id == subj.subject_id)
+                    if placed_cnt >= subj.total_periods:
+                        continue
+                    # try to assign to a teacher (including its assigned teacher) with load < 30
+                    # try to assign to a teacher (including its assigned teacher) with load < 30
+                    candidate_teachers = [tid for tid, t in self.teachers.items() if teacher_load.get(tid, 0) < 30 and t.department_id == subj.department_id]
+                    # ensure assigned teacher is included
+                    if subj.teacher_id not in candidate_teachers:
+                        candidate_teachers.append(subj.teacher_id)
+                    for tid in candidate_teachers:
+
+
+                        for day in DAYS:
+                            for period in range(1, PERIODS_PER_DAY + 1):
+                                for room_id in self.get_candidate_rooms(subj):
+                                    if self.is_available(subj, room_id, day, period, 1,
+                                                         set((t, d, p) for t, d, p in [(s.teacher_id, s.day, s.period) for s in best_schedule]),
+                                                         set((r, d, p) for r, d, p in [(s.room_id, s.day, s.period) for s in best_schedule]),
+                                                         set((g, d, p) for g, d, p in [(s.group_id, s.day, s.period) for s in best_schedule])):
+                                        best_schedule.append(ScheduleSlot(
+                                            group_id=subj.group_id,
+                                            timeslot_id=timeslot_id_from(day, period),
+                                            day=day,
+                                            period=period,
+                                            subject_id=subj.subject_id,
+                                            teacher_id=tid,
+                                            room_id=room_id,
+                                        ))
+                                        teacher_load[tid] += 1
+                                        placed = True
+                                        break
+                                if placed:
+                                    break
+                            if placed:
+                                break
+                        if placed:
+                            break
+                    if placed:
+                        break
+                if not placed:
+                    # cannot place any more
+                    break
+        if len(best_schedule) < target_total:
+            needed = target_total - len(best_schedule)
+            # Build sets of already busy slots for each dimension
+            for _ in range(needed):
+                placed = False
+                for day in DAYS:
+                    for period in range(1, PERIODS_PER_DAY + 1):
+                        # Find a subject that still has unplaced periods
+                        for subj in self.subjects:
+                            # Count already placed periods for this subject
+                            placed_cnt = sum(1 for s in best_schedule if s.subject_id == subj.subject_id)
+                            if placed_cnt >= subj.total_periods:
+                                continue
+                            # Try any candidate room
+                            for room_id in self.get_candidate_rooms(subj):
+                                if self.is_available(subj, room_id, day, period, 1,
+                                                      set((t, d, p) for t,d,p in [(s.teacher_id, s.day, s.period) for s in best_schedule]),
+                                                      set((r, d, p) for r,d,p in [(s.room_id, s.day, s.period) for s in best_schedule]),
+                                                      set((g, d, p) for g,d,p in [(s.group_id, s.day, s.period) for s in best_schedule])):
+                                    best_schedule.append(ScheduleSlot(
+                                        group_id=subj.group_id,
+                                        timeslot_id=timeslot_id_from(day, period),
+                                        day=day,
+                                        period=period,
+                                        subject_id=subj.subject_id,
+                                        teacher_id=subj.teacher_id,
+                                        room_id=room_id,
+                                    ))
+                                    placed = True
+                                    break
+                            if placed:
+                                break
+                        if placed:
+                            break
+                    if placed:
+                        break
+                if not placed:
+                    # No placement found – give up
+                    break
+
         return best_schedule
 
 
@@ -459,7 +605,7 @@ def export_output_csv(schedule: List[ScheduleSlot], filepath: str = "output.csv"
     """ส่งออกตารางเรียนเป็นไฟล์ output.csv ตามรูปแบบมาตรฐานการแข่งขัน 7 คอลัมน์"""
     with open(filepath, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.writer(f)
-        writer.writerow(["group_id", "timeslot_id", "day", "period", "subject_id", "teacher_id", "room_id"]))
+        writer.writerow(["group_id", "timeslot_id", "day", "period", "subject_id", "teacher_id", "room_id"])
         for row in schedule:
             writer.writerow([
                 row.group_id,
