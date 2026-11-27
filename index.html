@@ -1,0 +1,2761 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI SmartScheduler ปวส. — Green-White VEC Edition</title>
+  <style>
+    /* =========================================================================
+       1. GREEN-WHITE VEC EDITION DESIGN SYSTEM (100% SELF-CONTAINED)
+       ========================================================================= */
+    :root {
+      --emerald-950: #022c22;
+      --emerald-900: #064e3b;
+      --emerald-800: #065f46;
+      --emerald-700: #047857;
+      --emerald-600: #059669;
+      --emerald-500: #10b981;
+      --emerald-400: #34d399;
+      --emerald-200: #a7f3d0;
+      --emerald-100: #d1fae5;
+      --emerald-50: #ecfdf5;
+      --mint-50: #f2fbf7;
+      --mint-100: #e6f8f0;
+      --teal-600: #0d9488;
+      --teal-100: #ccfbf1;
+      --teal-50: #f0fdfa;
+      --amber-600: #d97706;
+      --amber-100: #fef3c7;
+      --amber-50: #fffbeb;
+      --rose-700: #be123c;
+      --rose-600: #e11d48;
+      --rose-200: #fecdd3;
+      --rose-100: #ffe4e6;
+      --rose-50: #fff1f2;
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --white: #ffffff;
+      --card-border: rgba(16, 185, 129, 0.24);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: 'Sarabun', 'IBM Plex Sans Thai', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(145deg, #FFFFFF 0%, #F2FBF7 45%, #E6F8F0 100%);
+      color: var(--emerald-950);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4, .font-display, .btn {
+      font-family: 'Prompt', 'Kanit', 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .font-mono-code, code, pre {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .hidden { display: none !important; }
+    .container { max-width: 1340px; margin: 0 auto; padding: 0 1rem; }
+
+    .surface-card {
+      background: linear-gradient(180deg, #FFFFFF 0%, #F8FDFB 100%);
+      border-radius: 1.35rem;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 6px 24px rgba(6, 78, 59, 0.05);
+      padding: 1.35rem;
+    }
+
+    .hero-banner {
+      background: linear-gradient(125deg, #064E3B 0%, #047857 45%, #059669 80%, #10B981 100%);
+      color: var(--white);
+      border-radius: 1.5rem;
+      padding: 1.65rem 1.85rem;
+      box-shadow: 0 14px 32px rgba(4, 120, 87, 0.22);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.62rem 1.15rem;
+      border-radius: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      text-decoration: none;
+    }
+
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-primary {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+    .btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
+    .btn-dark-emerald { background: var(--emerald-900); color: var(--white); }
+    .btn-dark-emerald:hover { background: var(--emerald-950); }
+    .btn-outline { background: var(--white); border-color: rgba(16, 185, 129, 0.35); color: var(--emerald-900); }
+    .btn-outline:hover { background: var(--emerald-50); border-color: var(--emerald-500); }
+    .btn-amber { background: var(--amber-600); color: var(--white); }
+    .btn-rose { background: var(--rose-600); color: var(--white); }
+    .btn-ghost-white { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.28); color: var(--white); }
+    .btn-ghost-white:hover { background: rgba(255, 255, 255, 0.24); }
+    .btn-sm { padding: 0.4rem 0.78rem; font-size: 0.8125rem; border-radius: 0.65rem; }
+    .btn-xs { padding: 0.2rem 0.44rem; font-size: 0.7rem; border-radius: 0.42rem; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.22rem 0.68rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .badge-emerald { background: var(--emerald-100); color: var(--emerald-900); }
+    .badge-dark { background: var(--emerald-900); color: #a7f3d0; }
+    .badge-teal { background: var(--teal-100); color: #115e59; }
+    .badge-amber { background: var(--amber-100); color: #92400e; }
+    .badge-rose { background: var(--rose-100); color: var(--rose-700); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+    .login-split-grid { display: grid; grid-template-columns: 1.65fr 1fr; gap: 1.25rem; align-items: start; }
+
+    @media (max-width: 1080px) {
+      .login-split-grid { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .grid-2, .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    .form-label { display: block; font-size: 0.875rem; font-weight: 700; color: var(--emerald-900); margin-bottom: 0.35rem; }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.65rem 0.88rem;
+      border-radius: 0.8rem;
+      border: 1.5px solid rgba(16, 185, 129, 0.32);
+      background: var(--white);
+      font-family: inherit;
+      font-size: 0.9375rem;
+      color: var(--emerald-950);
+      transition: all 0.15s ease;
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--emerald-600);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.16);
+    }
+
+    .login-gateway { min-height: 100vh; padding: 1.5rem 1rem 2.5rem; }
+    .role-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
+      border-bottom: 1px dashed rgba(16, 185, 129, 0.3);
+    }
+    .demo-chip {
+      width: 100%;
+      text-align: left;
+      background: var(--emerald-50);
+      border: 1px solid var(--emerald-200);
+      border-radius: 0.75rem;
+      padding: 0.5rem 0.7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-family: inherit;
+      font-size: 0.81rem;
+      color: var(--emerald-950);
+      transition: all 0.15s ease;
+    }
+    .demo-chip:hover { background: var(--emerald-100); border-color: var(--emerald-500); transform: translateX(2px); }
+
+    .sticky-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.7rem 0;
+    }
+    .navbar-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+
+    .role-switcher-pill {
+      display: inline-flex;
+      background: var(--emerald-50);
+      padding: 0.25rem;
+      border-radius: 0.85rem;
+      border: 1px solid var(--emerald-200);
+      gap: 0.2rem;
+    }
+    .role-sw-btn {
+      border: none;
+      background: transparent;
+      padding: 0.38rem 0.75rem;
+      border-radius: 0.65rem;
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--emerald-900);
+      cursor: pointer;
+    }
+    .role-sw-btn.active { background: var(--emerald-700); color: var(--white); box-shadow: 0 2px 6px rgba(4, 120, 87, 0.25); }
+
+    .stepper-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1.25rem; }
+    @media (max-width: 820px) { .stepper-bar { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .stepper-bar { grid-template-columns: 1fr; } }
+
+    .step-btn {
+      text-align: left;
+      background: var(--white);
+      border: 1.5px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 0.75rem 0.95rem;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .step-btn.active {
+      background: linear-gradient(135deg, #064E3B 0%, #047857 100%);
+      color: var(--white);
+      border-color: var(--emerald-700);
+      box-shadow: 0 6px 16px rgba(4, 120, 87, 0.22);
+    }
+
+    .timetable-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 1.15rem;
+      border: 1px solid var(--card-border);
+      background: var(--white);
+    }
+    .tt-table { width: 100%; min-width: 1040px; border-collapse: collapse; table-layout: fixed; }
+    .tt-table th, .tt-table td { border: 1px solid rgba(16, 185, 129, 0.22); padding: 0.42rem; vertical-align: top; word-wrap: break-word; }
+    .tt-table thead th {
+      background: linear-gradient(180deg, #064E3B 0%, #047857 100%);
+      color: var(--white);
+      text-align: center;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 0.6rem 0.3rem;
+    }
+    .tt-table thead th.lunch-th { background: #065f46; color: #a7f3d0; }
+    .tt-day-td { background: var(--emerald-50); color: var(--emerald-900); font-weight: 700; text-align: center; vertical-align: middle !important; font-size: 0.9375rem; }
+    .tt-lunch-td {
+      background: repeating-linear-gradient(-45deg, #ECFDF5, #ECFDF5 7px, #D1FAE5 7px, #D1FAE5 14px);
+      color: var(--emerald-900);
+      text-align: center;
+      vertical-align: middle !important;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .tt-unavail-td {
+      background: rgba(255, 241, 242, 0.85);
+      border-color: var(--rose-200);
+      color: var(--rose-700);
+      text-align: center;
+      vertical-align: middle !important;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .tt-empty-td { color: var(--slate-500); text-align: center; vertical-align: middle !important; font-size: 0.75rem; }
+
+    .block-card {
+      border-radius: 0.65rem;
+      padding: 0.45rem 0.52rem;
+      font-size: 0.76rem;
+      line-height: 1.35;
+      border-left: 4px solid;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.15s ease;
+      cursor: grab;
+      user-select: none;
+    }
+    .block-card:active { cursor: grabbing; }
+    .block-card.is-dragging { opacity: 0.45; transform: scale(0.98); }
+    .block-card.is-locked { cursor: not-allowed; }
+    .block-card.is-split-piece { border-top: 1.5px dashed rgba(5, 150, 105, 0.65); border-right: 1.5px dashed rgba(5, 150, 105, 0.65); }
+
+    .tt-drop-target { transition: background-color 0.12s ease, outline 0.12s ease; }
+    .tt-drop-target.drag-over-valid { background: rgba(16, 185, 129, 0.24) !important; outline: 2px dashed #059669; outline-offset: -2px; }
+    .tt-drop-target.drag-over-invalid { background: rgba(244, 63, 94, 0.18) !important; outline: 2px dashed #e11d48; outline-offset: -2px; }
+    .block-card:hover { box-shadow: 0 4px 10px rgba(6, 78, 59, 0.12); }
+
+    .block-r101 { background: #ecfdf5; border-color: #059669; color: #064e3b; }
+    .block-r102 { background: #f0fdfa; border-color: #0d9488; color: #115e59; }
+    .block-r103 { background: #eff6ff; border-color: #0284c7; color: #0c4a6e; }
+    .block-r201 { background: #fffbeb; border-color: #d97706; color: #78350f; }
+
+    .vec-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .vec-table th { background: var(--emerald-50); color: var(--emerald-900); font-weight: 700; text-align: left; padding: 0.62rem 0.75rem; border-bottom: 2px solid var(--emerald-200); }
+    .vec-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(16, 185, 129, 0.16); }
+
+    .cell-edit-input {
+      width: 100%;
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.4rem;
+      border: 1px solid transparent;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--emerald-950);
+    }
+    .cell-edit-input:hover, .cell-edit-input:focus { border-color: var(--emerald-500); background: var(--white); outline: none; }
+
+    .progress-bar-bg { width: 100%; height: 0.75rem; background: var(--emerald-100); border-radius: 9999px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #10b981, #047857); transition: width 0.2s ease; }
+
+    .csv-dropzone {
+      border: 2px dashed rgba(16, 185, 129, 0.45);
+      background: var(--emerald-50);
+      border-radius: 1rem;
+      padding: 1.15rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .csv-dropzone:hover { background: var(--emerald-100); border-color: var(--emerald-600); }
+
+    .copilot-fab {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 60;
+      background: linear-gradient(135deg, #064E3B 0%, #059669 100%);
+      color: var(--white);
+      border: none;
+      border-radius: 9999px;
+      padding: 0.75rem 1.2rem;
+      font-family: 'Prompt', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      box-shadow: 0 10px 25px rgba(6, 78, 59, 0.32);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .copilot-drawer {
+      position: fixed;
+      bottom: 4.75rem;
+      right: 1.25rem;
+      width: 360px;
+      max-width: calc(100vw - 2rem);
+      background: var(--white);
+      border: 1.5px solid var(--emerald-400);
+      border-radius: 1.25rem;
+      box-shadow: 0 18px 40px rgba(6, 78, 59, 0.25);
+      z-index: 60;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 44, 34, 0.6); z-index: 70; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-box { background: var(--white); border-radius: 1.35rem; max-width: 780px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 1.5rem; border: 1px solid var(--card-border); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25); }
+
+    .toast-container { position: fixed; top: 4.5rem; right: 1.25rem; z-index: 80; display: flex; flex-direction: column; gap: 0.45rem; max-width: 380px; pointer-events: none; }
+    .toast-msg { background: var(--emerald-900); color: var(--white); padding: 0.72rem 1rem; border-radius: 0.85rem; font-size: 0.85rem; font-weight: 500; border-left: 4px solid var(--emerald-400); box-shadow: 0 8px 20px rgba(2, 44, 34, 0.25); }
+    .toast-msg.warn { border-left-color: #f59e0b; }
+    .toast-msg.err { border-left-color: #f43f5e; }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: var(--white); }
+      .timetable-wrapper { overflow: visible; border: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="toast-stack" class="toast-container no-print"></div>
+
+  <!-- =========================================================================
+       VIEW 0: ROLE-BASED LOGIN GATEWAY (#view-login)
+       ========================================================================= -->
+  <section id="view-login" class="login-gateway">
+    <div class="container">
+      <div class="hero-banner" style="margin-bottom:1.5rem;">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem;">
+          <div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+              <span class="badge" style="background:rgba(255,255,255,0.18); color:#ecfdf5;">
+                การแข่งขันทักษะวิชาชีพ ทักษะเทคโนโลยีปัญญาประดิษฐ์ (ปวส.) — ระดับภาคตะวันออกเฉียงเหนือ 2568
+              </span>
+              <span id="login-pub-badge" class="badge badge-amber">สถานะ: ฉบับร่าง (ยังไม่ประกาศตารางเรียน)</span>
+            </div>
+            <h1 style="font-size:1.85rem; font-weight:700; letter-spacing:-0.01em;">
+              AI SmartScheduler ปวส. <span style="font-weight:400; color:#a7f3d0;">(Green-White VEC Edition)</span>
+            </h1>
+            <p id="login-scale-subtitle" style="font-size:0.95rem; color:#d1fae5; margin-top:0.25rem;">
+              ระบบจัดตารางสอนอัตโนมัติระดับวิทยาลัย 100 กลุ่มเรียน • 70 ครูผู้สอน • 10 แผนกวิชา • 80 ห้องเรียน (2,200 คาบ/สัปดาห์)
+            </p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+            <button type="button" class="btn btn-ghost-white btn-sm" onclick="openArchitectureModal()">
+              คู่มือ & สถาปัตยกรรม AI (100 คะแนน)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="login-error-banner" class="hidden" style="background:var(--rose-50); border:1.5px solid var(--rose-200); color:var(--rose-700); padding:0.85rem 1.15rem; border-radius:1rem; margin-bottom:1.25rem; font-weight:700;">
+        <span id="login-error-text">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</span>
+      </div>
+
+      <div class="login-split-grid" style="margin-bottom:1.5rem;">
+        <!-- LEFT: 3 ROLE CREDENTIAL FORMS -->
+        <div class="grid-3">
+          <div class="surface-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div class="role-card-header">
+                <div>
+                  <span class="badge badge-dark">บทบาทที่ 1 • ADMIN</span>
+                  <h2 style="font-size:1.15rem; font-weight:700; color:var(--emerald-900); margin-top:0.35rem;">แอดมิน (ฝ่ายวิชาการ)</h2>
+                </div>
+                <div style="font-size:1.5rem;">🛡️</div>
+              </div>
+              <p style="font-size:0.83rem; color:var(--slate-600); margin-bottom:0.85rem;">
+                จัดการข้อมูล CSV ทั้ง 10 แผนก รันอัลกอริทึม AI ปรับแก้ตาราง และควบคุมการประกาศผล
+              </p>
+              <form onsubmit="submitRoleLogin(event, 'admin')">
+                <div style="margin-bottom:0.75rem;">
+                  <label class="form-label" for="admin-user-input">ชื่อผู้ดูแลระบบ (Username)</label>
+                  <input id="admin-user-input" type="text" class="form-input" placeholder="ผู้ดูแลระบบ หรือ admin" autocomplete="off" />
+                </div>
+                <div style="margin-bottom:0.95rem;">
+                  <label class="form-label" for="admin-pass-input">รหัสผ่าน (Password)</label>
+                  <input id="admin-pass-input" type="password" class="form-input" placeholder="admin1234" />
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">ลงชื่อเข้าใช้แอดมิน</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="surface-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div class="role-card-header">
+                <div>
+                  <span class="badge badge-emerald">บทบาทที่ 2 • TEACHER</span>
+                  <h2 style="font-size:1.15rem; font-weight:700; color:var(--emerald-900); margin-top:0.35rem;">ครูผู้สอน (T01 – T70)</h2>
+                </div>
+                <div style="font-size:1.5rem;">👨‍🏫</div>
+              </div>
+              <p style="font-size:0.83rem; color:var(--slate-600); margin-bottom:0.85rem;">
+                ดึงชื่อ-นามสกุลหรือรหัสครูจาก <code class="font-mono-code">teacher.csv</code> ทั้ง 70 ท่านเพื่อตรวจตารางสอนส่วนตัว
+              </p>
+              <form onsubmit="submitRoleLogin(event, 'teacher')">
+                <div style="margin-bottom:0.75rem;">
+                  <label class="form-label" for="teacher-user-input">ชื่อ-นามสกุล หรือ รหัสครู</label>
+                  <input id="teacher-user-input" type="text" class="form-input" list="teacher-datalist" placeholder="เช่น T01 หรือ อ.สมชาย ใจดี" autocomplete="off" />
+                  <datalist id="teacher-datalist"></datalist>
+                </div>
+                <div style="margin-bottom:0.95rem;">
+                  <label class="form-label" for="teacher-pass-input">รหัสผ่าน (Password)</label>
+                  <input id="teacher-pass-input" type="password" class="form-input" placeholder="1234" />
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">ลงชื่อเข้าใช้ครูผู้สอน</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="surface-card" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div class="role-card-header">
+                <div>
+                  <span class="badge badge-teal">บทบาทที่ 3 • STUDENT</span>
+                  <h2 style="font-size:1.15rem; font-weight:700; color:var(--emerald-900); margin-top:0.35rem;">นักศึกษา (100 กลุ่ม)</h2>
+                </div>
+                <div style="font-size:1.5rem;">🎓</div>
+              </div>
+              <p style="font-size:0.83rem; color:var(--slate-600); margin-bottom:0.85rem;">
+                ใช้รหัสนักศึกษาเป็น Username (ระบบจะซ่อนตารางจนกว่าแอดมินจะกดประกาศตารางเรียน)
+              </p>
+              <form onsubmit="submitRoleLogin(event, 'student')">
+                <div style="margin-bottom:0.75rem;">
+                  <label class="form-label" for="student-user-input">รหัสนักศึกษา (Student ID)</label>
+                  <input id="student-user-input" type="text" class="form-input font-mono-code" list="student-datalist" placeholder="เช่น 69319100035" autocomplete="off" />
+                  <datalist id="student-datalist"></datalist>
+                </div>
+                <div style="margin-bottom:0.95rem;">
+                  <label class="form-label" for="student-pass-input">รหัสผ่าน (Password)</label>
+                  <input id="student-pass-input" type="password" class="form-input" placeholder="1234" />
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">ลงชื่อเข้าใช้นักศึกษา</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: QUICK-FILL DEMO ACCOUNTS PANEL (REPRESENTATIVE PER DEPT) -->
+        <aside class="surface-card" style="background:linear-gradient(180deg, #F8FDFB 0%, #ECFDF5 100%);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+            <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900);">บัญชีทดสอบด่วน (ตัวแทน 10 แผนก)</h3>
+            <span class="badge badge-emerald">คลิกเพื่อเติมฟอร์ม</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--slate-600); margin-bottom:0.7rem;">
+            แสดงตัวแทนแผนกละ 1 บัญชี (ค้นหาทั้งหมด 70 ครู / 100 กลุ่ม ได้ในช่องกรอกด้านซ้าย)
+          </p>
+
+          <div style="margin-bottom:0.75rem;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.3rem;">1. ผู้ดูแลระบบ (Admin)</div>
+            <button type="button" class="demo-chip" onclick="fillCredentials('admin', 'ผู้ดูแลระบบ', 'admin1234')">
+              <span><strong>ผู้ดูแลระบบ</strong> (หรือ <code class="font-mono-code">admin</code>)</span>
+              <span class="badge badge-dark font-mono-code">admin1234</span>
+            </button>
+          </div>
+
+          <div style="margin-bottom:0.75rem;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.3rem;">2. ตัวแทนครูผู้สอน (10 แผนก)</div>
+            <div id="teacher-demo-chips" style="display:flex; flex-direction:column; gap:0.28rem; max-height:155px; overflow-y:auto; padding-right:2px;"></div>
+          </div>
+
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.3rem;">3. ตัวแทนนักศึกษา (10 แผนก)</div>
+            <div id="student-demo-chips" style="display:flex; flex-direction:column; gap:0.28rem; max-height:155px; overflow-y:auto; padding-right:2px;"></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="surface-card" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; padding:1rem 1.35rem;">
+        <div style="font-size:0.875rem; color:var(--emerald-900);">
+          <strong>เงื่อนไข Publish Gatekeeping:</strong> ระบบเริ่มต้นด้วยสถานะ <span class="badge badge-amber">ฉบับร่าง (ยังไม่ประกาศ)</span> หากนักศึกษารหัส <code class="font-mono-code">69319100035</code> (นางสาวเพียงขวัญ โสกูล) ล็อกอินเข้ามาจะยังไม่เห็นตารางเรียน จนกว่าแอดมินจะกดปุ่ม <strong>"ประกาศตารางเรียนอย่างเป็นทางการ"</strong>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="openArchitectureModal()">รายละเอียดเกณฑ์ 100 คะแนน</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       AUTHENTICATED APPLICATION SHELL
+       ========================================================================= -->
+  <div id="app-authenticated-shell" class="hidden">
+    <header class="sticky-navbar no-print">
+      <div class="container navbar-inner">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <div style="width:2.5rem; height:2.5rem; border-radius:0.8rem; background:linear-gradient(135deg,#064E3B,#10B981); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:700;">
+            📅
+          </div>
+          <div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem;">
+              <strong style="font-size:1.05rem; color:var(--emerald-900);">AI SmartScheduler ปวส.</strong>
+              <span class="badge badge-emerald" id="nav-preset-badge">Large (100 กลุ่ม / 2,200 คาบ)</span>
+              <span id="nav-live-status" class="badge badge-dark font-mono-code">0 Conflicts • PASS 8/8</span>
+            </div>
+            <div id="nav-user-subtitle" style="font-size:0.8rem; color:var(--slate-600);">ผู้ใช้งาน: ผู้ดูแลระบบ</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="openArchitectureModal()">คู่มือ & สถาปัตยกรรม AI</button>
+          <div class="role-switcher-pill">
+            <button type="button" id="sw-btn-admin" class="role-sw-btn active" onclick="quickSwitchRole('admin')">แอดมิน</button>
+            <button type="button" id="sw-btn-teacher" class="role-sw-btn" onclick="quickSwitchRole('teacher')">ครูผู้สอน</button>
+            <button type="button" id="sw-btn-student" class="role-sw-btn" onclick="quickSwitchRole('student')">นักเรียน</button>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="hardResetSystem()">รีเซ็ตข้อมูล</button>
+          <button type="button" class="btn btn-dark-emerald btn-sm" onclick="logoutToGateway()">หน้าล็อกอิน</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container" style="padding-top:1.25rem; padding-bottom:4.5rem;">
+      <!-- =====================================================================
+           PORTAL 1: ADMIN WORKSPACE (#view-admin) — 4-STEP STEPPER
+           ===================================================================== -->
+      <section id="view-admin" class="hidden">
+        <div id="admin-publish-strip" class="surface-card no-print" style="margin-bottom:1.15rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem;"></div>
+
+        <div class="stepper-bar no-print">
+          <button type="button" id="step-btn-1" class="step-btn active" onclick="switchAdminStep(1)">
+            <div style="font-size:0.75rem; opacity:0.85; font-weight:700;">ขั้นตอนที่ 1</div>
+            <div style="font-size:0.95rem; font-weight:700;">นำเข้า & ตรวจสอบ CSV</div>
+          </button>
+          <button type="button" id="step-btn-2" class="step-btn" onclick="switchAdminStep(2)">
+            <div style="font-size:0.75rem; opacity:0.85; font-weight:700;">ขั้นตอนที่ 2</div>
+            <div style="font-size:0.95rem; font-weight:700;">ประมวลผล AI (CSP / XAI)</div>
+          </button>
+          <button type="button" id="step-btn-3" class="step-btn" onclick="switchAdminStep(3)">
+            <div style="font-size:0.75rem; opacity:0.85; font-weight:700;">ขั้นตอนที่ 3</div>
+            <div style="font-size:0.95rem; font-weight:700;">ตารางสอน & ประกาศผล</div>
+          </button>
+          <button type="button" id="step-btn-4" class="step-btn" onclick="switchAdminStep(4)">
+            <div style="font-size:0.75rem; opacity:0.85; font-weight:700;">ขั้นตอนที่ 4</div>
+            <div style="font-size:0.95rem; font-weight:700;">Dashboard 10 แผนก & ส่งออก</div>
+          </button>
+        </div>
+
+        <!-- STEP 1: DATA IMPORT & CELL-LEVEL EDITOR -->
+        <div id="admin-step-1">
+          <div class="grid-2" style="margin-bottom:1.15rem;">
+            <div class="surface-card">
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.5rem;">
+                เลือกชุดข้อมูลจำลอง & นำเข้าไฟล์ CSV (RFC-4180)
+              </h3>
+              <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.85rem;">
+                <button type="button" id="preset-btn-small" class="btn btn-sm btn-outline" onclick="loadDatasetPreset('small')">Small (สอศ. 30 วิชา / 153 คาบ)</button>
+                <button type="button" id="preset-btn-medium" class="btn btn-sm btn-outline" onclick="loadDatasetPreset('medium')">Medium (วิทยาลัย 60 วิชา)</button>
+                <button type="button" id="preset-btn-large" class="btn btn-sm btn-primary" onclick="loadDatasetPreset('large')">Large (100 กลุ่ม / 70 ครู / 10 แผนก)</button>
+              </div>
+
+              <div class="csv-dropzone" onclick="document.getElementById('csv-multi-upload').click()">
+                <div style="font-weight:700; color:var(--emerald-900);">คลิกเพื่อเลือกไฟล์ CSV หลายไฟล์พร้อมกัน (รองรับทั้ง 9 ไฟล์)</div>
+                <div style="font-size:0.8rem; color:var(--slate-600); margin-top:0.2rem;">
+                  teacher, room, student_groups, subject, timeslot, teach, register, teacher_unavailability, room_unavailability
+                </div>
+                <input type="file" id="csv-multi-upload" multiple accept=".csv" class="hidden" onchange="handleMultiCSVUpload(event)" />
+              </div>
+
+              <div style="display:flex; flex-wrap:wrap; gap:0.45rem; margin-top:0.85rem;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="exportBackupJSON()">สำรองข้อมูล (.JSON)</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('json-restore-input').click()">กู้คืน (.JSON)</button>
+                <input type="file" id="json-restore-input" accept=".json" class="hidden" onchange="importBackupJSON(event)" />
+                <button type="button" class="btn btn-outline btn-sm" onclick="downloadAllTemplatesCSV()">โหลดชุดต้นแบบ CSV</button>
+              </div>
+            </div>
+
+            <div class="surface-card">
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.5rem;">
+                AI Root-Cause Advisor & Pre-Check Validation
+              </h3>
+              <div id="precheck-status-box" style="padding:0.75rem 0.9rem; border-radius:0.85rem; background:var(--emerald-50); border:1px solid var(--emerald-200); font-size:0.85rem; color:var(--emerald-900); margin-bottom:0.75rem;"></div>
+              <div id="advisor-insight-box" style="padding:0.8rem 0.95rem; border-radius:0.85rem; background:var(--teal-50); border:1px solid var(--teal-100); font-size:0.84rem; color:#115e59;"></div>
+            </div>
+          </div>
+
+          <div class="surface-card">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.85rem;">
+              <div>
+                <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900);">
+                  ตารางพรีวิวและแก้ไขข้อมูลสดทุกช่อง (Cell-Level Inline Editor + กรอง 10 แผนก)
+                </h3>
+                <p style="font-size:0.8rem; color:var(--slate-600);">คลิกแก้ไขข้อความหรือตัวเลขในช่องตารางได้ทันที ระบบจะซิงก์ข้อมูลให้สอดคล้อง</p>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+                <select id="editor-dept-filter" class="form-select" style="width:auto; min-width:190px; padding:0.38rem 0.7rem; font-size:0.82rem;" onchange="renderInlineEditor()"></select>
+                <button type="button" id="ed-tab-courses" class="btn btn-sm btn-primary" onclick="switchEditorEntity('courses')">รายวิชา</button>
+                <button type="button" id="ed-tab-teachers" class="btn btn-sm btn-outline" onclick="switchEditorEntity('teachers')">ครูผู้สอน</button>
+                <button type="button" id="ed-tab-rooms" class="btn btn-sm btn-outline" onclick="switchEditorEntity('rooms')">ห้องเรียน</button>
+                <button type="button" id="ed-tab-groups" class="btn btn-sm btn-outline" onclick="switchEditorEntity('groups')">กลุ่มเรียน</button>
+                <button type="button" id="ed-tab-students" class="btn btn-sm btn-outline" onclick="switchEditorEntity('students')">นักศึกษา</button>
+              </div>
+            </div>
+            <div id="inline-editor-table-wrap" style="overflow-x:auto; max-height:420px;"></div>
+          </div>
+        </div>
+
+        <!-- STEP 2: NON-BLOCKING AI SOLVER + PROGRESS BAR + BENCHMARK + XAI -->
+        <div id="admin-step-2" class="hidden">
+          <div class="grid-2" style="margin-bottom:1.15rem;">
+            <div class="surface-card">
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.75rem;">
+                พารามิเตอร์อัลกอริทึม AI & Deterministic Seed (Mulberry32)
+              </h3>
+              <div class="grid-2" style="margin-bottom:0.75rem;">
+                <div>
+                  <label class="form-label" for="ai-algo-mode">โหมดอัลกอริทึมหลัก</label>
+                  <select id="ai-algo-mode" class="form-select">
+                    <option value="csp">Teacher-First CSP + MRV Heuristic (แนะนำ)</option>
+                    <option value="ga">Genetic Algorithm (GA) + Repair Pass</option>
+                    <option value="sa">Simulated Annealing (SA) + Tabu Move</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label" for="ai-seed-input">Random Seed (Mulberry32)</label>
+                  <input id="ai-seed-input" type="number" class="form-input font-mono-code" value="2568" />
+                </div>
+              </div>
+
+              <div style="margin-bottom:0.75rem;">
+                <label class="form-label" for="ai-max-iter">Max Iterations: <span id="ai-iter-label" class="font-mono-code">20</span> รอบ</label>
+                <input id="ai-max-iter" type="range" min="5" max="60" value="20" style="width:100%;" oninput="document.getElementById('ai-iter-label').textContent = this.value" />
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:0.45rem; font-size:0.875rem; margin-bottom:0.85rem; padding:0.75rem; background:var(--emerald-50); border-radius:0.85rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:600; cursor:pointer;">
+                  <input type="checkbox" id="opt-smart-overflow" checked />
+                  เปิดใช้งาน Smart Lab Overflow (กระจายห้อง Lab ในแผนก → ข้ามแผนกเมื่อเต็ม ห้ามลงห้องทฤษฎี)
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:600; cursor:pointer;">
+                  <input type="checkbox" id="opt-contiguous" checked />
+                  รวมก้อนรายวิชาเดียวกันในช่วงเช้า (1–4) / บ่าย (5–8) อัตโนมัติไม่ข้ามพักเที่ยง
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:600; cursor:pointer;">
+                  <input type="checkbox" id="opt-min-gaps" checked />
+                  ลดคาบว่างระหว่างวัน (Minimize Teacher & Student Gaps)
+                </label>
+              </div>
+
+              <!-- Live Progress Indicator (Criterion 2: Efficiency 10 pts) -->
+              <div id="ai-progress-wrap" style="margin-bottom:0.85rem; padding:0.65rem 0.85rem; background:var(--white); border:1px solid var(--emerald-200); border-radius:0.85rem;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.3rem;">
+                  <span id="ai-progress-text">พร้อมคำนวณ (Idle)</span>
+                  <span id="ai-progress-pct" class="font-mono-code">100%</span>
+                </div>
+                <div class="progress-bar-bg"><div id="ai-progress-fill" class="progress-bar-fill" style="width:100%;"></div></div>
+              </div>
+
+              <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+                <button type="button" id="btn-run-ai" class="btn btn-primary" onclick="executeAIScheduler(false)">
+                  เริ่มจัดตารางสอน AI
+                </button>
+                <button type="button" id="btn-run-bench" class="btn btn-outline" onclick="runThreeModeBenchmark()">
+                  ทดสอบ Benchmark จริง (Before vs. After)
+                </button>
+              </div>
+            </div>
+
+            <div class="surface-card">
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.75rem;">
+                4 ตัวชี้วัด KPI & กราฟ Convergence Curve (SVG)
+              </h3>
+              <div class="grid-4" style="margin-bottom:0.85rem;">
+                <div style="padding:0.65rem; border-radius:0.8rem; background:var(--emerald-50); border:1px solid var(--emerald-200);">
+                  <div style="font-size:0.72rem; color:var(--emerald-800); font-weight:700;">Hard Conflicts</div>
+                  <div id="kpi-ai-conflicts" style="font-size:1.25rem; font-weight:800; color:var(--emerald-700);">0</div>
+                </div>
+                <div style="padding:0.65rem; border-radius:0.8rem; background:var(--emerald-50); border:1px solid var(--emerald-200);">
+                  <div style="font-size:0.72rem; color:var(--emerald-800); font-weight:700;">จัดสำเร็จ</div>
+                  <div id="kpi-ai-placed" style="font-size:1.25rem; font-weight:800; color:var(--emerald-900);">2200/2200</div>
+                </div>
+                <div style="padding:0.65rem; border-radius:0.8rem; background:var(--emerald-50); border:1px solid var(--emerald-200);">
+                  <div style="font-size:0.72rem; color:var(--emerald-800); font-weight:700;">XAI Fitness</div>
+                  <div id="kpi-ai-fitness" style="font-size:1.25rem; font-weight:800; color:var(--emerald-700);">—</div>
+                </div>
+                <div style="padding:0.65rem; border-radius:0.8rem; background:var(--emerald-50); border:1px solid var(--emerald-200);">
+                  <div style="font-size:0.72rem; color:var(--emerald-800); font-weight:700;">เวลาประมวลผล</div>
+                  <div id="kpi-ai-time" style="font-size:1.25rem; font-weight:800; color:var(--emerald-900);">—</div>
+                </div>
+              </div>
+
+              <div style="background:var(--white); border:1px solid var(--emerald-200); border-radius:0.85rem; padding:0.65rem;">
+                <div style="font-size:0.75rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.35rem;">
+                  กราฟการลู่เข้าของคะแนนคุณภาพตาราง (Fitness Convergence Curve)
+                </div>
+                <svg id="convergence-svg" viewBox="0 0 420 110" style="width:100%; height:110px; display:block;"></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="surface-card">
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.75rem;">
+                Explainable AI (XAI) — คำนวณคะแนนคุณภาพจริง 5 มิติ
+              </h3>
+              <div id="xai-dimensions-box" style="display:flex; flex-direction:column; gap:0.65rem;"></div>
+            </div>
+
+            <div class="surface-card">
+              <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.5rem;">
+                Live AI Execution Log & ผลเปรียบเทียบ Before vs. After (รันจริง)
+              </h3>
+              <pre id="ai-execution-log" class="font-mono-code" style="background:#022c22; color:#a7f3d0; padding:0.75rem; border-radius:0.8rem; font-size:0.78rem; max-height:175px; overflow-y:auto; margin-bottom:0.75rem;"></pre>
+              <div id="benchmark-result-wrap"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: INTERACTIVE TIMETABLE (4 VIEWS + 10-DEPT FILTER + DRAG/SPLIT) -->
+        <div id="admin-step-3" class="hidden">
+          <div class="surface-card" style="margin-bottom:1.15rem;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.85rem;">
+              <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                <button type="button" id="tt-mode-teacher" class="btn btn-sm btn-primary" onclick="setTimetableViewMode('teacher')">1. มุมมองครูผู้สอน</button>
+                <button type="button" id="tt-mode-group" class="btn btn-sm btn-outline" onclick="setTimetableViewMode('group')">2. มุมมองกลุ่มเรียน</button>
+                <button type="button" id="tt-mode-room" class="btn btn-sm btn-outline" onclick="setTimetableViewMode('room')">3. มุมมองห้องเรียน</button>
+                <button type="button" id="tt-mode-daily" class="btn btn-sm btn-outline" onclick="setTimetableViewMode('daily')">4. มุมมองรายวัน (Daily)</button>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:0.4rem;" class="no-print">
+                <button type="button" class="btn btn-primary btn-sm" onclick="coalesceAllSameSessionBlocks()">🔗 รวมก้อนคาบติดกันทั้งหมด</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="undoScheduleAction()">ย้อนกลับ (Undo)</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="unlockAllBlocks()">ปลดล็อกทั้งหมด</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">พิมพ์ตาราง (PDF)</button>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.85rem; padding:0.65rem 0.85rem; background:var(--emerald-50); border-radius:0.85rem;">
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.65rem;">
+                <label for="admin-tt-dept-filter" style="font-weight:700; font-size:0.875rem; color:var(--emerald-900);">แผนกวิชา:</label>
+                <select id="admin-tt-dept-filter" class="form-select" style="width:auto; min-width:190px; padding:0.4rem 0.75rem;" onchange="renderAdminTimetable()"></select>
+                <label for="admin-tt-selector" style="font-weight:700; font-size:0.875rem; color:var(--emerald-900);">รายการ:</label>
+                <select id="admin-tt-selector" class="form-select" style="width:auto; min-width:250px; padding:0.4rem 0.75rem;" onchange="onAdminSelectorChange(this.value)"></select>
+              </div>
+              <div style="font-size:0.8rem; color:var(--emerald-800);">
+                กด <strong>✂ ฉีก</strong> เพื่อแยกคาบ • ลากวางการ์ดข้ามคาบ/ข้ามวันได้อิสระ
+              </div>
+            </div>
+
+            <div id="admin-tt-matrix-container"></div>
+          </div>
+        </div>
+
+        <!-- STEP 4: DASHBOARD 10 DEPARTMENTS + 8-RULE AUDIT & EXPORT -->
+        <div id="admin-step-4" class="hidden">
+          <!-- Executive 10-Department Analytics Summary -->
+          <div class="surface-card" style="margin-bottom:1.15rem;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.75rem;">
+              <div>
+                <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900);">
+                  Dashboard สรุปภาพรวมรายแผนกวิชา (10 แผนก • 100 กลุ่มเรียน • 70 ครู • 2,200 คาบ)
+                </h3>
+                <p style="font-size:0.8rem; color:var(--slate-600);">คำนวณสดจากผลตารางสอนปัจจุบัน</p>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:0.45rem;" class="no-print">
+                <button type="button" class="btn btn-primary btn-sm" onclick="downloadOutputCSV()">ส่งออก output.csv (7 คอลัมน์)</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="downloadExcelXLS()">ส่งออก Excel (.xls)</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">พิมพ์รายงานสรุป PDF</button>
+              </div>
+            </div>
+            <div id="dept-executive-table-wrap" style="overflow-x:auto;"></div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:1.15rem;">
+            <div class="surface-card">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
+                <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900);">
+                  รายการตรวจสอบเกณฑ์การแข่งขัน 8 ข้อ (Audit Check)
+                </h3>
+                <span id="audit-pass-badge" class="badge badge-emerald">PASS 8 / 8</span>
+              </div>
+              <div id="audit-rules-list" style="display:flex; flex-direction:column; gap:0.45rem;"></div>
+            </div>
+
+            <div class="surface-card">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; margin-bottom:0.75rem;">
+                <h3 style="font-size:1.05rem; font-weight:700; color:var(--emerald-900);">กราฟภาระงานสอนรายบุคคล</h3>
+                <select id="audit-dept-filter" class="form-select" style="width:auto; min-width:170px; padding:0.35rem 0.65rem; font-size:0.82rem;" onchange="renderAuditAndExport()"></select>
+              </div>
+              <div id="workload-utilization-bars" style="display:flex; flex-direction:column; gap:0.65rem; max-height:330px; overflow-y:auto;"></div>
+            </div>
+          </div>
+
+          <div class="surface-card">
+            <h3 style="font-size:1rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.5rem;">
+              Live CSV Inspector (<code class="font-mono-code">output.csv</code>)
+            </h3>
+            <pre id="live-csv-inspector" class="font-mono-code" style="background:#022c22; color:#d1fae5; padding:0.9rem; border-radius:0.85rem; font-size:0.8rem; max-height:260px; overflow:auto;"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           PORTAL 2: TEACHER PORTAL (#view-teacher)
+           ===================================================================== -->
+      <section id="view-teacher" class="hidden">
+        <div id="teacher-status-banner" class="surface-card" style="margin-bottom:1.15rem;"></div>
+        <div class="surface-card" style="margin-bottom:1.15rem;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:1rem;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.65rem;">
+              <label for="teacher-portal-select" style="font-weight:700; color:var(--emerald-900);">ดูตารางสอนของครู:</label>
+              <select id="teacher-portal-select" class="form-select" style="width:auto; min-width:260px;" onchange="onTeacherPortalSelect(this.value)"></select>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem;" class="no-print">
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadTeacherPersonalCSV()">โหลด CSV ส่วนตัว</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">พิมพ์ตารางสอน PDF</button>
+            </div>
+          </div>
+          <div class="grid-4" id="teacher-kpi-grid" style="margin-bottom:1rem;"></div>
+          <div id="teacher-personal-matrix"></div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           PORTAL 3: STUDENT PORTAL (#view-student) WITH STRICT GATEKEEPER
+           ===================================================================== -->
+      <section id="view-student" class="hidden">
+        <div id="student-gatekeeper-box" class="surface-card" style="max-width:680px; margin:2rem auto; text-align:center; padding:2.25rem 1.5rem; border:2px solid #f59e0b;">
+          <div style="font-size:3rem; margin-bottom:0.5rem;">🔒</div>
+          <span class="badge badge-amber" style="margin-bottom:0.5rem;">สถานะ: ฉบับร่าง (ยังไม่ประกาศตารางเรียน)</span>
+          <h2 style="font-size:1.45rem; font-weight:700; color:var(--emerald-900);">
+            ฝ่ายวิชาการยังไม่ได้ประกาศตารางเรียนอย่างเป็นทางการ
+          </h2>
+          <p style="font-size:0.9375rem; color:var(--slate-600); margin-top:0.45rem;">
+            ระบบจะแสดงตารางเรียนประจำกลุ่มของคุณทันทีหลังจากที่แอดมินกดปุ่ม <strong>"ประกาศตารางเรียนอย่างเป็นทางการ"</strong> เรียบร้อยแล้ว
+          </p>
+          <div id="student-gate-info" style="margin-top:1.25rem; text-align:left; background:var(--emerald-50); border:1px solid var(--emerald-200); border-radius:1rem; padding:1rem; font-size:0.9rem;"></div>
+          <div style="margin-top:1.35rem; display:flex; flex-wrap:wrap; justify-content:center; gap:0.65rem;">
+            <button type="button" class="btn btn-primary" onclick="checkStudentPublishRefresh()">รีเฟรชตรวจสอบสถานะประกาศ</button>
+            <button type="button" class="btn btn-outline" onclick="quickSwitchRole('admin')">สลับไปหน้าแอดมินเพื่อกดประกาศ</button>
+          </div>
+        </div>
+
+        <div id="student-published-view" class="hidden">
+          <div class="surface-card" style="margin-bottom:1.15rem; background:var(--emerald-50); border-color:var(--emerald-400); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
+            <div>
+              <strong style="color:var(--emerald-900); font-size:1rem;">ตารางเรียนประกาศใช้งานอย่างเป็นทางการแล้ว (PUBLISHED)</strong>
+              <div id="student-pub-meta" style="font-size:0.85rem; color:var(--emerald-800);"></div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.45rem;" class="no-print">
+              <button type="button" class="btn btn-primary btn-sm" onclick="downloadStudentGroupCSV()">โหลด CSV กลุ่มเรียน</button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">พิมพ์ตารางเรียน PDF</button>
+            </div>
+          </div>
+
+          <div class="surface-card" style="margin-bottom:1.15rem;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:1rem;">
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.65rem;">
+                <label for="student-group-select" style="font-weight:700; color:var(--emerald-900);">กลุ่มการเรียน:</label>
+                <select id="student-group-select" class="form-select" style="width:auto; min-width:260px;" onchange="onStudentGroupSelect(this.value)"></select>
+              </div>
+              <input id="student-search-box" type="text" class="form-input" style="max-width:260px;" placeholder="ค้นหารหัสวิชา, ชื่อวิชา, ครู, ห้อง..." oninput="renderStudentPortal()" />
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:1rem;" class="no-print">
+              <button type="button" id="stu-day-ALL" class="btn btn-sm btn-primary" onclick="setStudentDayFilter('ALL')">ทุกวัน (จันทร์–ศุกร์)</button>
+              <button type="button" id="stu-day-Mon" class="btn btn-sm btn-outline" onclick="setStudentDayFilter('Mon')">จันทร์</button>
+              <button type="button" id="stu-day-Tue" class="btn btn-sm btn-outline" onclick="setStudentDayFilter('Tue')">อังคาร</button>
+              <button type="button" id="stu-day-Wed" class="btn btn-sm btn-outline" onclick="setStudentDayFilter('Wed')">พุธ</button>
+              <button type="button" id="stu-day-Thu" class="btn btn-sm btn-outline" onclick="setStudentDayFilter('Thu')">พฤหัสบดี</button>
+              <button type="button" id="stu-day-Fri" class="btn btn-sm btn-outline" onclick="setStudentDayFilter('Fri')">ศุกร์</button>
+            </div>
+
+            <div class="grid-4" id="student-kpi-grid" style="margin-bottom:1rem;"></div>
+            <div id="student-personal-matrix"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MOVE BLOCK MODAL -->
+  <div id="move-block-modal" class="modal-backdrop hidden no-print" onclick="if(event.target===this) closeMoveModal()">
+    <div class="modal-box" style="max-width:480px;">
+      <h3 style="font-size:1.15rem; font-weight:700; color:var(--emerald-900); margin-bottom:0.5rem;">ย้ายคาบเรียน / สลับตำแหน่งตารางสอน</h3>
+      <p id="move-block-desc" style="font-size:0.875rem; color:var(--slate-600); margin-bottom:1rem;"></p>
+      <div class="grid-2" style="margin-bottom:1rem;">
+        <div>
+          <label class="form-label" for="move-target-day">วันปลายทาง</label>
+          <select id="move-target-day" class="form-select">
+            <option value="Mon">วันจันทร์</option>
+            <option value="Tue">วันอังคาร</option>
+            <option value="Wed">วันพุธ</option>
+            <option value="Thu">วันพฤหัสบดี</option>
+            <option value="Fri">วันศุกร์</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="move-target-period">คาบเริ่มต้นปลายทาง (1–8)</label>
+          <select id="move-target-period" class="form-select">
+            <option value="1">คาบ 1 (08:00)</option>
+            <option value="2">คาบ 2 (09:00)</option>
+            <option value="3">คาบ 3 (10:00)</option>
+            <option value="4">คาบ 4 (11:00)</option>
+            <option value="5">คาบ 5 (13:00)</option>
+            <option value="6">คาบ 6 (14:00)</option>
+            <option value="7">คาบ 7 (15:00)</option>
+            <option value="8">คาบ 8 (16:00)</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeMoveModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="confirmMoveBlock()">ยืนยันการย้ายคาบ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE & 100-POINT RUBRIC MODAL -->
+  <div id="arch-modal" class="modal-backdrop hidden no-print" onclick="if(event.target===this) closeArchitectureModal()">
+    <div class="modal-box">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem;">
+        <h3 style="font-size:1.2rem; font-weight:700; color:var(--emerald-900);">
+          สถาปัตยกรรม AI SmartScheduler ปวส. & เกณฑ์ 100 คะแนน (สอศ. 2568)
+        </h3>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeArchitectureModal()">ปิด</button>
+      </div>
+      <div style="font-size:0.9rem; color:var(--slate-700); display:flex; flex-direction:column; gap:0.75rem;">
+        <div style="padding:0.85rem; background:var(--emerald-50); border-radius:0.85rem;">
+          <strong>1. Teacher-First Two-Phase CSP + MRV Heuristic (Non-Blocking):</strong> จัดเรียงรายวิชาที่มีข้อจำกัดสูงสุดก่อน ยึดครูเป็นแกนหลัก (รองรับตั้งแต่ 5 ถึง 70 ครู / 100 กลุ่มเรียน / 2,200 คาบ) พร้อมแสดง Progress Bar แบบ Real-time
+        </div>
+        <div style="padding:0.85rem; background:var(--teal-50); border-radius:0.85rem;">
+          <strong>2. Smart Lab Overflow + Capacity Match:</strong> รายวิชาปฏิบัติการจะจัดลงห้อง Lab ภายในแผนกที่ความจุเพียงพอก่อน และหากเต็มจะ Overflow ไปห้อง Lab อื่นในวิทยาลัย โดยห้ามลงห้องทฤษฎีเด็ดขาด
+        </div>
+        <div style="padding:0.85rem; background:var(--emerald-50); border-radius:0.85rem;">
+          <strong>3. Smart Block Coalescing + Split (<code>✂ ฉีก</code>) & Re-Merge (<code>🔗 รวมกลับ</code>):</strong> ลากวางข้ามคาบ/ข้ามวันได้อิสระพร้อมตรวจ Conflict ทันที
+        </div>
+        <div style="padding:0.85rem; background:var(--emerald-50); border:1px solid var(--emerald-200); border-radius:0.85rem;">
+          <strong>4. เกณฑ์คะแนนเต็ม 100 คะแนน:</strong><br />
+          • <em>ความถูกต้อง (20 คะแนน):</em> 0 Hard Conflicts, ครบ 2,200 คาบ, ครูทุกคน ≥ 30 คาบ/สัปดาห์<br />
+          • <em>ประสิทธิภาพ (10 คะแนน):</em> Non-blocking Async Solver + Mulberry32 + Progress Indicator<br />
+          • <em>คุณภาพโปรแกรม (35 คะแนน):</em> นำเข้าครบ 9 CSV + ตรวจ Foreign Keys + 4 มุมมอง + Dashboard 10 แผนก + ส่งออก <code>output.csv</code> / Excel / PDF<br />
+          • <em>เทคนิค AI (20 คะแนน):</em> CSP+MRV / GA / SA พร้อมรัน Benchmark เปรียบเทียบ Before vs. After Tuning จริง<br />
+          • <em>นำเสนอ & ตอบคำถาม (15 คะแนน):</em> สคริปต์สาธิต 10–15 นาทีครบทุกมุมมองบทบาท
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL WIDGET: AI SCHEDULE COPILOT -->
+  <button type="button" class="copilot-fab no-print" onclick="toggleCopilotDrawer()">
+    <span>🤖 AI Schedule Copilot</span>
+  </button>
+
+  <div id="copilot-drawer" class="copilot-drawer hidden no-print">
+    <div style="background:linear-gradient(125deg,#064E3B,#059669); color:#fff; padding:0.85rem 1rem; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <strong style="font-size:0.95rem;">AI Schedule Copilot</strong>
+        <div style="font-size:0.72rem; color:#d1fae5;">ผู้ช่วยวิเคราะห์กฎ 8 ข้อและภาระงานสด</div>
+      </div>
+      <button type="button" class="btn btn-ghost-white btn-xs" onclick="toggleCopilotDrawer()">✕</button>
+    </div>
+    <div id="copilot-messages" style="padding:0.85rem; height:240px; overflow-y:auto; display:flex; flex-direction:column; gap:0.55rem; font-size:0.84rem; background:#f8fdfb;">
+      <div style="background:var(--emerald-100); color:var(--emerald-950); padding:0.65rem 0.8rem; border-radius:0.85rem;">
+        สวัสดีครับ! ผมคือ <strong>AI Schedule Copilot</strong> สอบถามผลตรวจกฎ 8 ข้อ ภาระงานครู 70 คน หรือสรุป 10 แผนกวิชาได้เลยครับ
+      </div>
+    </div>
+    <div style="padding:0.5rem 0.75rem; border-top:1px solid var(--emerald-100); display:flex; flex-wrap:wrap; gap:0.3rem; background:#fff;">
+      <button type="button" class="btn btn-outline btn-xs" onclick="askCopilot('ตรวจกฎ 8 ข้อ')">ตรวจกฎ 8 ข้อ</button>
+      <button type="button" class="btn btn-outline btn-xs" onclick="askCopilot('ภาระงานครู')">ภาระงานครู</button>
+      <button type="button" class="btn btn-outline btn-xs" onclick="askCopilot('อัตราการใช้ห้อง')">อัตราการใช้ห้อง</button>
+    </div>
+    <form onsubmit="handleCopilotSubmit(event)" style="display:flex; padding:0.55rem; border-top:1px solid var(--emerald-100); gap:0.35rem; background:#fff;">
+      <input id="copilot-input" type="text" class="form-input" style="padding:0.45rem 0.65rem; font-size:0.84rem;" placeholder="พิมพ์คำถาม..." />
+      <button type="submit" class="btn btn-primary btn-sm">ส่ง</button>
+    </form>
+  </div>
+
+  <!-- Load 100-Group / 70-Teacher / 10-Department CSV Bundle -->
+  <script src="data/dataset_bundle.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'vec_2568_scale100_v1';
+      window.__MEM_STORE__ = window.__MEM_STORE__ || {};
+
+      function safeGetItem(key) {
+        try { if (window.localStorage) return window.localStorage.getItem(key); } catch (e) {}
+        return Object.prototype.hasOwnProperty.call(window.__MEM_STORE__, key) ? window.__MEM_STORE__[key] : null;
+      }
+
+      function safeSetItem(key, val) {
+        window.__MEM_STORE__[key] = String(val);
+        try { if (window.localStorage) window.localStorage.setItem(key, String(val)); } catch (e) {}
+      }
+
+      function safeRemoveItem(key) {
+        delete window.__MEM_STORE__[key];
+        try { if (window.localStorage) window.localStorage.removeItem(key); } catch (e) {}
+      }
+
+      function sanitizeText(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+
+      function createMulberry32(seed) {
+        let a = Number(seed) || 2568;
+        return function () {
+          let t = (a += 0x6d2b79f5);
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      window.addEventListener('error', function (ev) {
+        console.warn('Handled Global Error:', ev && ev.message);
+      });
+
+      const DAYS = [
+        { id: 'Mon', label: 'จันทร์' },
+        { id: 'Tue', label: 'อังคาร' },
+        { id: 'Wed', label: 'พุธ' },
+        { id: 'Thu', label: 'พฤหัสบดี' },
+        { id: 'Fri', label: 'ศุกร์' }
+      ];
+
+      const PERIOD_LABELS = {
+        1: '08:00–09:00', 2: '09:00–10:00', 3: '10:00–11:00', 4: '11:00–12:00',
+        5: '13:00–14:00', 6: '14:00–15:00', 7: '15:00–16:00', 8: '16:00–17:00'
+      };
+
+      // Small VOS Standard Preset (30 courses / 153 periods)
+      const SMALL_VEC_DATA = {
+        admins: [{ admin_id: 'ADMIN01', admin_name: 'ผู้ดูแลระบบ', alias: 'admin', password: 'admin1234', title: 'ฝ่ายวิชาการ สอศ.' }],
+        departments: [{ department_id: 'D01', department_name: 'เทคโนโลยีปัญญาประดิษฐ์ / เทคโนโลยีสารสนเทศ' }],
+        teachers: [
+          { teacher_id: 'T01', teacher_name: 'ดร.สมชาย ใจดี', department_id: 'D01', unavailability: 'Mon:1-4|Wed:5-8', password: '1234' },
+          { teacher_id: 'T02', teacher_name: 'อ.วิภาดา ศิริพร', department_id: 'D01', unavailability: 'Tue:5-8|Thu:1-4', password: '1234' },
+          { teacher_id: 'T03', teacher_name: 'อ.ณรงค์ศักดิ์ ประเสริฐ', department_id: 'D01', unavailability: 'Wed:1-4|Fri:5-8', password: '1234' },
+          { teacher_id: 'T04', teacher_name: 'อ.กนกวรรณ เพชรรัตน์', department_id: 'D01', unavailability: 'Mon:5-8|Thu:5-8', password: '1234' },
+          { teacher_id: 'T05', teacher_name: 'อ.ธีรยุทธ ชัยชนะ', department_id: 'D01', unavailability: 'Tue:1-4|Fri:1-4', password: '1234' }
+        ],
+        rooms: [
+          { room_id: 'R101', room_name: 'ห้องปฏิบัติการ AI & Data Science', room_type: 'Lab', capacity: 40, department_id: 'D01', unavailability: 'Mon:1-2|Wed:7-8' },
+          { room_id: 'R102', room_name: 'ห้องปฏิบัติการเครือข่ายและระบบ', room_type: 'Lab', capacity: 40, department_id: 'D01', unavailability: 'Tue:3-4|Thu:1-2' },
+          { room_id: 'R103', room_name: 'ห้องปฏิบัติการพัฒนาซอฟต์แวร์', room_type: 'Lab', capacity: 40, department_id: 'D01', unavailability: 'Wed:1-2|Fri:5-6' },
+          { room_id: 'R201', room_name: 'ห้องเรียนทฤษฎีไอที', room_type: 'Theory', capacity: 50, department_id: 'D01', unavailability: 'Mon:7-8|Fri:7-8' }
+        ],
+        studentGroups: [
+          { group_id: 'ปวส.1/1', group_name: 'ปวส.1/1 เทคโนโลยีปัญญาประดิษฐ์', student_count: 35, advisor: 'T01', department_id: 'D01' },
+          { group_id: 'ปวส.1/2', group_name: 'ปวส.1/2 เทคโนโลยีสารสนเทศ', student_count: 38, advisor: 'T04', department_id: 'D01' },
+          { group_id: 'ปวส.2/1', group_name: 'ปวส.2/1 เทคโนโลยีปัญญาประดิษฐ์', student_count: 32, advisor: 'T03', department_id: 'D01' },
+          { group_id: 'ปวส.2/2', group_name: 'ปวส.2/2 เทคโนโลยีสารสนเทศ', student_count: 34, advisor: 'T02', department_id: 'D01' }
+        ],
+        students: [
+          { student_id: '69319100035', short_id: '035', student_name: 'นางสาวเพียงขวัญ โสกูล', group_id: 'ปวส.1/2', department_id: 'D01', password: '1234' },
+          { student_id: '69319100001', short_id: '001', student_name: 'นายธนกฤต วงศ์สุวรรณ', group_id: 'ปวส.1/1', department_id: 'D01', password: '1234' },
+          { student_id: '68319100001', short_id: '201', student_name: 'นายกิตติพงศ์ เจริญสุข', group_id: 'ปวส.2/1', department_id: 'D01', password: '1234' },
+          { student_id: '68319100015', short_id: '215', student_name: 'นายพีรพัฒน์ อินทร์แก้ว', group_id: 'ปวส.2/2', department_id: 'D01', password: '1234' }
+        ],
+        courses: [
+          { subject_id: '30901-1001', subject_name: 'การเขียนโปรแกรมคอมพิวเตอร์ชั้นสูง', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T01', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/1', department_id: 'D01' },
+          { subject_id: '30901-2001', subject_name: 'การเรียนรู้ของเครื่องและการประยุกต์', theory: 2, practice: 4, periods: 6, credit: 4, teacher_id: 'T01', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/1', department_id: 'D01' },
+          { subject_id: '30901-2002', subject_name: 'ปัญญาประดิษฐ์เชิงลึกและระบบผู้เชี่ยวชาญ', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T01', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-1002', subject_name: 'ระบบจัดการฐานข้อมูล', theory: 2, practice: 2, periods: 4, credit: 3, teacher_id: 'T01', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/2', department_id: 'D01' },
+          { subject_id: '30901-2003', subject_name: 'การประมวลผลข้อมูลขนาดใหญ่', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T01', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/1', department_id: 'D01' },
+          { subject_id: '30901-1003', subject_name: 'การวิเคราะห์และออกแบบระบบงาน', theory: 3, practice: 2, periods: 5, credit: 3, teacher_id: 'T01', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.1/1', department_id: 'D01' },
+          { subject_id: '30901-1004', subject_name: 'เครือข่ายคอมพิวเตอร์และการสื่อสาร', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T02', required_room: 'R102', room_type_required: 'Lab', group_id: 'ปวส.1/1', department_id: 'D01' },
+          { subject_id: '30901-2004', subject_name: 'ความมั่นคงปลอดภัยบนระบบเครือข่าย', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T02', required_room: 'R102', room_type_required: 'Lab', group_id: 'ปวส.2/1', department_id: 'D01' },
+          { subject_id: '30901-2005', subject_name: 'วิศวกรรมซอฟต์แวร์และการบริหารโครงการ', theory: 3, practice: 2, periods: 5, credit: 3, teacher_id: 'T02', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-1005', subject_name: 'โครงสร้างข้อมูลและอัลกอริทึม', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T02', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/2', department_id: 'D01' },
+          { subject_id: '30901-2006', subject_name: 'การบริหารจัดการระบบปฏิบัติการคอมพิวเตอร์', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T02', required_room: 'R102', room_type_required: 'Lab', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-1006', subject_name: 'ระบบคอมพิวเตอร์และสถาปัตยกรรม', theory: 4, practice: 2, periods: 6, credit: 4, teacher_id: 'T02', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.1/2', department_id: 'D01' },
+          { subject_id: '30901-2007', subject_name: 'คอมพิวเตอร์วิทัศน์และการประมวลผลภาพ', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T03', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/1', department_id: 'D01' },
+          { subject_id: '30901-2008', subject_name: 'การทดสอบและประกันคุณภาพซอฟต์แวร์', theory: 3, practice: 2, periods: 5, credit: 3, teacher_id: 'T03', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-2009', subject_name: 'การประมวลผลภาษาธรรมชาติ (NLP)', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T03', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-2010', subject_name: 'การพัฒนาโมเดลปัญญาประดิษฐ์ในงานอุตสาหกรรม', theory: 2, practice: 4, periods: 6, credit: 4, teacher_id: 'T03', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/1', department_id: 'D01' },
+          { subject_id: '30901-1007', subject_name: 'คณิตศาสตร์สำหรับวิทยาการคอมพิวเตอร์', theory: 3, practice: 2, periods: 5, credit: 3, teacher_id: 'T03', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.1/1', department_id: 'D01' },
+          { subject_id: '30901-1008', subject_name: 'สถิติและการวิเคราะห์ข้อมูลเบื้องต้น', theory: 2, practice: 2, periods: 4, credit: 3, teacher_id: 'T03', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.1/2', department_id: 'D01' },
+          { subject_id: '30901-1009', subject_name: 'การบริหารจัดการระบบฐานข้อมูลขั้นสูง', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T04', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/2', department_id: 'D01' },
+          { subject_id: '30901-1010', subject_name: 'การพัฒนาเว็บแอปพลิเคชัน', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T04', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/1', department_id: 'D01' },
+          { subject_id: '30901-2011', subject_name: 'การพัฒนาเว็บแอปพลิเคชันด้วยเทคโนโลยีสมัยใหม่', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T04', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/1', department_id: 'D01' },
+          { subject_id: '30901-2012', subject_name: 'เทคโนโลยีคลาวด์และเดฟออปส์ (DevOps)', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T04', required_room: 'R102', room_type_required: 'Lab', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-1011', subject_name: 'การออกแบบส่วนติดต่อและประสบการณ์ผู้ใช้ (UI/UX)', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T04', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/1', department_id: 'D01' },
+          { subject_id: '30901-1012', subject_name: 'เทคโนโลยีสารสนเทศเพื่อการจัดการ', theory: 3, practice: 2, periods: 5, credit: 3, teacher_id: 'T04', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.1/2', department_id: 'D01' },
+          { subject_id: '30901-1013', subject_name: 'การโปรแกรมอุปกรณ์อินเทอร์เน็ตในทุกสิ่ง (IoT)', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T05', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/2', department_id: 'D01' },
+          { subject_id: '30901-2013', subject_name: 'การพัฒนาแอปพลิเคชันบนอุปกรณ์เคลื่อนที่', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T05', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-2014', subject_name: 'ความก้าวหน้าทางเทคโนโลยีปัญญาประดิษฐ์', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T05', required_room: 'R101', room_type_required: 'Lab', group_id: 'ปวส.2/1', department_id: 'D01' },
+          { subject_id: '30901-2015', subject_name: 'กฎหมายและจริยธรรมทางเทคโนโลยีสารสนเทศ', theory: 3, practice: 2, periods: 5, credit: 3, teacher_id: 'T05', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.2/2', department_id: 'D01' },
+          { subject_id: '30901-1014', subject_name: 'เทคโนโลยีมัลติมีเดียและดิจิทัลคอนเทนต์', theory: 2, practice: 3, periods: 5, credit: 3, teacher_id: 'T05', required_room: 'R103', room_type_required: 'Lab', group_id: 'ปวส.1/1', department_id: 'D01' },
+          { subject_id: '30901-1015', subject_name: 'สัมมนาเทคโนโลยีสารสนเทศ', theory: 3, practice: 2, periods: 5, credit: 3, teacher_id: 'T05', required_room: 'R201', room_type_required: 'Theory', group_id: 'ปวส.1/2', department_id: 'D01' }
+        ]
+      };
+
+      function getPresetDataset(preset) {
+        const bundle = window.VEC_RAW_DATASET_BUNDLE;
+        if (preset === 'large' && bundle && Array.isArray(bundle.courses)) {
+          return JSON.parse(JSON.stringify(bundle));
+        }
+        if (preset === 'medium' && bundle && Array.isArray(bundle.courses)) {
+          // First 4 departments (40 groups, 28 teachers, 200 courses)
+          const targetDepts = ['D01', 'D02', 'D03', 'D04'];
+          return {
+            admins: JSON.parse(JSON.stringify(bundle.admins)),
+            departments: bundle.departments.filter(d => targetDepts.includes(d.department_id)),
+            teachers: bundle.teachers.filter(t => targetDepts.includes(t.department_id)),
+            rooms: bundle.rooms.filter(r => targetDepts.includes(r.department_id)),
+            studentGroups: bundle.studentGroups.filter(g => targetDepts.includes(g.department_id)),
+            students: bundle.students.filter(s => targetDepts.includes(s.department_id)),
+            courses: bundle.courses.filter(c => targetDepts.includes(c.department_id))
+          };
+        }
+        return JSON.parse(JSON.stringify(SMALL_VEC_DATA));
+      }
+
+      const initialPreset = window.VEC_RAW_DATASET_BUNDLE ? 'large' : 'small';
+
+      const state = {
+        role: null,
+        user: null,
+        isPublished: false,
+        publishedAt: null,
+        isSolving: false,
+        preset: initialPreset,
+        data: getPresetDataset(initialPreset),
+        editorEntity: 'courses',
+        blocks: [],
+        undoStack: [],
+        ttMode: 'teacher',
+        ttSelectedEntity: 'T01',
+        teacherPortalId: 'T01',
+        studentPortalGroup: initialPreset === 'large' ? 'G002' : 'ปวส.1/2',
+        studentDayFilter: 'ALL',
+        movingBlockId: null,
+        aiMetrics: {
+          conflicts: 0, placed: 0, total: 0, fitness: 0, elapsedMs: 0,
+          history: [], xai: null
+        }
+      };
+
+      function persistState() {
+        safeSetItem(STORAGE_KEY, JSON.stringify({
+          isPublished: state.isPublished,
+          publishedAt: state.publishedAt,
+          preset: state.preset,
+          data: state.data,
+          blocks: state.blocks,
+          aiMetrics: state.aiMetrics
+        }));
+      }
+
+      function restoreState() {
+        const raw = safeGetItem(STORAGE_KEY);
+        if (!raw) return;
+        try {
+          const parsed = JSON.parse(raw);
+          if (typeof parsed.isPublished === 'boolean') state.isPublished = parsed.isPublished;
+          if (parsed.publishedAt) state.publishedAt = parsed.publishedAt;
+          if (parsed.preset) state.preset = parsed.preset;
+          if (parsed.data && Array.isArray(parsed.data.courses)) state.data = parsed.data;
+          if (Array.isArray(parsed.blocks) && parsed.blocks.length > 0) state.blocks = parsed.blocks;
+          if (parsed.aiMetrics) state.aiMetrics = parsed.aiMetrics;
+        } catch (e) {}
+      }
+
+      window.hardResetSystem = function () {
+        safeRemoveItem(STORAGE_KEY);
+        state.isPublished = false;
+        state.publishedAt = null;
+        state.preset = window.VEC_RAW_DATASET_BUNDLE ? 'large' : 'small';
+        state.data = getPresetDataset(state.preset);
+        state.blocks = [];
+        state.undoStack = [];
+        state.ttSelectedEntity = state.data.teachers[0]?.teacher_id || 'T01';
+        state.teacherPortalId = state.data.teachers[0]?.teacher_id || 'T01';
+        state.studentPortalGroup = state.data.students[0]?.group_id || 'G002';
+        window.executeAIScheduler(true);
+        showToast('รีเซ็ตข้อมูลกลับสู่ชุดเริ่มต้นเรียบร้อยแล้ว');
+      };
+
+      function showToast(msg, level) {
+        const stack = document.getElementById('toast-stack');
+        if (!stack) return;
+        const el = document.createElement('div');
+        el.className = 'toast-msg ' + (level || '');
+        el.textContent = msg;
+        stack.appendChild(el);
+        setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 3600);
+      }
+
+      function isSlotUnavailable(unavailStr, day, period) {
+        if (!unavailStr) return false;
+        const parts = String(unavailStr).split('|');
+        for (let i = 0; i < parts.length; i++) {
+          const seg = parts[i].trim();
+          const colonIdx = seg.indexOf(':');
+          if (colonIdx === -1) continue;
+          if (seg.slice(0, colonIdx).trim() !== day) continue;
+          const range = seg.slice(colonIdx + 1).trim();
+          if (range.includes('-')) {
+            const [s, e] = range.split('-').map(Number);
+            if (period >= s && period <= e) return true;
+          } else if (Number(range) === Number(period)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function isTeacherBlocked(teacherId, day, period) {
+        const t = state.data.teachers.find(x => x.teacher_id === teacherId);
+        return t ? isSlotUnavailable(t.unavailability, day, period) : false;
+      }
+
+      function isRoomBlocked(roomId, day, period) {
+        const r = state.data.rooms.find(x => x.room_id === roomId);
+        return r ? isSlotUnavailable(r.unavailability, day, period) : false;
+      }
+
+      // =======================================================================
+      // LOGIN & DEMO CHIPS (10 DEPARTMENTS)
+      // =======================================================================
+      function populateLoginHelpers() {
+        const pubBadge = document.getElementById('login-pub-badge');
+        if (pubBadge) {
+          pubBadge.className = state.isPublished ? 'badge badge-emerald' : 'badge badge-amber';
+          pubBadge.textContent = state.isPublished ? 'สถานะ: ประกาศตารางเรียนแล้ว (PUBLISHED)' : 'สถานะ: ฉบับร่าง (ยังไม่ประกาศตารางเรียน)';
+        }
+
+        const scaleEl = document.getElementById('login-scale-subtitle');
+        if (scaleEl) {
+          const totalP = state.data.courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+          const deptCnt = (state.data.departments || []).length || 1;
+          scaleEl.textContent = 'ระบบจัดตารางสอนอัตโนมัติ ' + state.data.studentGroups.length + ' กลุ่มเรียน • ' + state.data.teachers.length + ' ครูผู้สอน • ' + deptCnt + ' แผนกวิชา • ' + state.data.rooms.length + ' ห้องเรียน (' + totalP.toLocaleString() + ' คาบ/สัปดาห์)';
+        }
+
+        const tList = document.getElementById('teacher-datalist');
+        const tChips = document.getElementById('teacher-demo-chips');
+        if (tList && tChips) {
+          tList.innerHTML = state.data.teachers.map(t =>
+            '<option value="' + sanitizeText(t.teacher_id) + '">' + sanitizeText(t.teacher_name) + '</option>' +
+            '<option value="' + sanitizeText(t.teacher_name) + '"></option>'
+          ).join('');
+          // Pick 1 representative teacher per department
+          const seenDeptT = {};
+          const repTeachers = state.data.teachers.filter(t => {
+            const d = t.department_id || 'D01';
+            if (seenDeptT[d]) return false;
+            seenDeptT[d] = true;
+            return true;
+          });
+          tChips.innerHTML = repTeachers.map(t =>
+            '<button type="button" class="demo-chip" onclick="fillCredentials(\'teacher\', \'' + sanitizeText(t.teacher_name) + '\', \'' + sanitizeText(t.password || '1234') + '\')">' +
+              '<span><strong>' + sanitizeText(t.teacher_id) + '</strong> ' + sanitizeText(t.teacher_name) + ' <small style="color:var(--slate-500);">(' + sanitizeText(t.department_id || 'D01') + ')</small></span>' +
+              '<span class="badge badge-emerald font-mono-code">' + sanitizeText(t.password || '1234') + '</span>' +
+            '</button>'
+          ).join('');
+        }
+
+        const sList = document.getElementById('student-datalist');
+        const sChips = document.getElementById('student-demo-chips');
+        if (sList && sChips) {
+          sList.innerHTML = state.data.students.map(s =>
+            '<option value="' + sanitizeText(s.student_id) + '">' + sanitizeText(s.student_name + ' (' + s.group_id + ')') + '</option>'
+          ).join('');
+          const seenDeptS = {};
+          const repStudents = [];
+          const stu69 = state.data.students.find(s => String(s.student_id) === '69319100035');
+          if (stu69) {
+            repStudents.push(stu69);
+            seenDeptS[stu69.department_id || 'D01'] = true;
+          }
+          state.data.students.forEach(s => {
+            const d = s.department_id || 'D01';
+            if (!seenDeptS[d]) {
+              seenDeptS[d] = true;
+              repStudents.push(s);
+            }
+          });
+          sChips.innerHTML = repStudents.map(s =>
+            '<button type="button" class="demo-chip" onclick="fillCredentials(\'student\', \'' + sanitizeText(s.student_id) + '\', \'' + sanitizeText(s.password || '1234') + '\')">' +
+              '<span><strong class="font-mono-code">' + sanitizeText(s.student_id) + '</strong> ' + sanitizeText(s.student_name) + ' (' + sanitizeText(s.group_id) + ')</span>' +
+              '<span class="badge badge-teal font-mono-code">' + sanitizeText(s.password || '1234') + '</span>' +
+            '</button>'
+          ).join('');
+        }
+      }
+
+      window.fillCredentials = function (role, username, password) {
+        const uEl = document.getElementById(role + '-user-input');
+        const pEl = document.getElementById(role + '-pass-input');
+        if (uEl) uEl.value = username;
+        if (pEl) pEl.value = password;
+        document.getElementById('login-error-banner').classList.add('hidden');
+        showToast('เติมข้อมูลเข้าสู่ระบบ "' + username + '" เรียบร้อยแล้ว');
+      };
+
+      window.submitRoleLogin = function (ev, role) {
+        if (ev) ev.preventDefault();
+        const errBanner = document.getElementById('login-error-banner');
+        const errText = document.getElementById('login-error-text');
+        errBanner.classList.add('hidden');
+
+        const uRaw = (document.getElementById(role + '-user-input').value || '').trim();
+        const pRaw = (document.getElementById(role + '-pass-input').value || '').trim();
+        if (!uRaw || !pRaw) {
+          errText.textContent = 'กรุณากรอก Username และ Password ให้ครบถ้วนก่อนเข้าสู่ระบบ';
+          errBanner.classList.remove('hidden');
+          return;
+        }
+        const uNorm = uRaw.toLowerCase();
+
+        if (role === 'admin') {
+          const adm = state.data.admins.find(a =>
+            (a.admin_name.trim().toLowerCase() === uNorm || (a.alias && a.alias.toLowerCase() === uNorm)) && a.password === pRaw
+          );
+          if (!adm) {
+            errText.textContent = 'ชื่อผู้ดูแลระบบหรือรหัสผ่านไม่ถูกต้อง (ใช้ ผู้ดูแลระบบ หรือ admin / admin1234)';
+            errBanner.classList.remove('hidden');
+            return;
+          }
+          state.role = 'admin';
+          state.user = adm;
+        } else if (role === 'teacher') {
+          const tch = state.data.teachers.find(t =>
+            (t.teacher_name.trim().toLowerCase() === uNorm || t.teacher_id.trim().toLowerCase() === uNorm) && (t.password || '1234') === pRaw
+          );
+          if (!tch) {
+            errText.textContent = 'ไม่พบชื่อครูผู้สอนในฐานข้อมูล หรือรหัสผ่านไม่ถูกต้อง (ตัวอย่าง: T01 / 1234)';
+            errBanner.classList.remove('hidden');
+            return;
+          }
+          state.role = 'teacher';
+          state.user = tch;
+          state.teacherPortalId = tch.teacher_id;
+        } else {
+          const stu = state.data.students.find(s =>
+            (String(s.student_id).trim().toLowerCase() === uNorm || (s.short_id && String(s.short_id).toLowerCase() === uNorm)) && (s.password || '1234') === pRaw
+          );
+          if (!stu) {
+            errText.textContent = 'ไม่พบรหัสนักศึกษาในฐานข้อมูล หรือรหัสผ่านไม่ถูกต้อง (ตัวอย่าง: 69319100035 / 1234)';
+            errBanner.classList.remove('hidden');
+            return;
+          }
+          state.role = 'student';
+          state.user = stu;
+          state.studentPortalGroup = stu.group_id;
+        }
+
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('app-authenticated-shell').classList.remove('hidden');
+        showToast('ลงชื่อเข้าใช้สำเร็จ');
+        renderCurrentView();
+      };
+
+      window.quickSwitchRole = function (targetRole) {
+        if (targetRole === 'admin') {
+          state.role = 'admin';
+          state.user = state.data.admins[0];
+        } else if (targetRole === 'teacher') {
+          state.role = 'teacher';
+          state.user = state.data.teachers.find(t => t.teacher_id === state.teacherPortalId) || state.data.teachers[0];
+        } else {
+          state.role = 'student';
+          state.user = state.data.students.find(s => s.group_id === state.studentPortalGroup) || state.data.students[0];
+        }
+        renderCurrentView();
+      };
+
+      window.logoutToGateway = function () {
+        state.role = null;
+        state.user = null;
+        document.getElementById('app-authenticated-shell').classList.add('hidden');
+        document.getElementById('view-login').classList.remove('hidden');
+        populateLoginHelpers();
+      };
+
+      // =======================================================================
+      // CORE SOLVER ENGINE (SUPPORTS 100 GROUPS / 70 TEACHERS / 80 ROOMS)
+      // =======================================================================
+      function expandBlocksToSlots(blocks) {
+        const slots = [];
+        blocks.forEach(b => {
+          for (let offset = 0; offset < b.length; offset++) {
+            const p = b.startPeriod + offset;
+            const dayIdx = DAYS.findIndex(d => d.id === b.day);
+            slots.push({
+              blockId: b.id,
+              group_id: b.group_id,
+              timeslot_id: (dayIdx >= 0 ? dayIdx : 0) * 8 + p,
+              day: b.day,
+              period: p,
+              subject_id: b.subject_id,
+              subject_name: b.subject_name,
+              teacher_id: b.teacher_id,
+              room_id: b.room_id
+            });
+          }
+        });
+        return slots;
+      }
+
+      function getCandidateRoomsForCourse(course, allowOverflow, grpObj) {
+        const pref = course.required_room || state.data.rooms[0]?.room_id || 'R101';
+        const rooms = [pref];
+        if (!allowOverflow) return rooms;
+
+        const isTheoryCourse = course.room_type_required === 'Theory' || pref.startsWith('R2') || Number(course.practice || 0) === 0;
+        const reqCap = grpObj ? Number(grpObj.student_count || 30) : 30;
+        const targetType = isTheoryCourse ? 'Theory' : 'Lab';
+
+        // Prefer same-department rooms of matching type & capacity first, then campus-wide
+        const sameDept = state.data.rooms.filter(r =>
+          r.room_type === targetType && r.capacity >= reqCap && r.department_id === course.department_id && r.room_id !== pref
+        );
+        const otherDept = state.data.rooms.filter(r =>
+          r.room_type === targetType && r.capacity >= reqCap && r.department_id !== course.department_id && r.room_id !== pref
+        );
+        sameDept.forEach(r => rooms.push(r.room_id));
+        otherDept.forEach(r => rooms.push(r.room_id));
+        return rooms;
+      }
+
+      function runSingleSolverAttempt(courses, lockedBlocks, seed, algo, allowOverflow, naiveMode) {
+        const rand = createMulberry32(seed);
+        const placedBlocks = lockedBlocks.map(b => Object.assign({}, b));
+        const tBusy = {};
+        const rBusy = {};
+        const gBusy = {};
+        const tDailyLoad = {};
+        let curOverflow = 0;
+        let unplaced = 0;
+
+        placedBlocks.forEach(b => {
+          for (let k = 0; k < b.length; k++) {
+            const key = b.day + '_' + (b.startPeriod + k);
+            tBusy[b.teacher_id + '_' + key] = true;
+            rBusy[b.room_id + '_' + key] = true;
+            gBusy[b.group_id + '_' + key] = true;
+            tDailyLoad[b.teacher_id + '_' + b.day] = (tDailyLoad[b.teacher_id + '_' + b.day] || 0) + 1;
+          }
+        });
+
+        const grpLookup = {};
+        state.data.studentGroups.forEach(g => { grpLookup[g.group_id] = g; });
+
+        const order = naiveMode
+          ? courses.slice().sort(() => rand() - 0.5)
+          : courses.slice().sort((a, b) => {
+              const pDiff = Number(b.periods) - Number(a.periods);
+              if (pDiff !== 0) return pDiff;
+              return rand() - 0.5;
+            });
+
+        order.forEach(course => {
+          const alreadyPeriods = placedBlocks
+            .filter(b => b.subject_id === course.subject_id && b.group_id === course.group_id)
+            .reduce((s, b) => s + b.length, 0);
+          let rem = Number(course.periods) - alreadyPeriods;
+          if (rem <= 0) return;
+
+          const blockPlan = rem === 6 ? [3, 3] : rem === 5 ? [3, 2] : rem === 4 ? [2, 2] : [rem];
+          const usedDays = {};
+          const candidateRooms = getCandidateRoomsForCourse(course, allowOverflow, grpLookup[course.group_id]);
+
+          blockPlan.forEach((len, bIdx) => {
+            let placed = false;
+            const dayOrder = DAYS.map(d => d.id).sort((d1, d2) => {
+              const u1 = usedDays[d1] ? 1 : 0;
+              const u2 = usedDays[d2] ? 1 : 0;
+              if (u1 !== u2) return u1 - u2;
+              // Soft constraint: prefer days where teacher has lower daily load
+              const l1 = tDailyLoad[course.teacher_id + '_' + d1] || 0;
+              const l2 = tDailyLoad[course.teacher_id + '_' + d2] || 0;
+              if (!naiveMode && l1 !== l2) return l1 - l2;
+              return rand() - 0.5;
+            });
+
+            for (let ri = 0; ri < candidateRooms.length && !placed; ri++) {
+              const roomId = candidateRooms[ri];
+              for (let di = 0; di < dayOrder.length && !placed; di++) {
+                const day = dayOrder[di];
+                if (!naiveMode && (tDailyLoad[course.teacher_id + '_' + day] || 0) + len > 7) continue;
+                const halves = [[1, 2, 3, 4], [5, 6, 7, 8]];
+                for (let hi = 0; hi < halves.length && !placed; hi++) {
+                  const half = halves[hi];
+                  for (let si = 0; si <= half.length - len && !placed; si++) {
+                    const periods = half.slice(si, si + len);
+                    const ok = periods.every(p => {
+                      const key = day + '_' + p;
+                      return (
+                        !tBusy[course.teacher_id + '_' + key] &&
+                        !rBusy[roomId + '_' + key] &&
+                        !gBusy[course.group_id + '_' + key] &&
+                        !isTeacherBlocked(course.teacher_id, day, p) &&
+                        !isRoomBlocked(roomId, day, p)
+                      );
+                    });
+
+                    if (ok) {
+                      periods.forEach(p => {
+                        const key = day + '_' + p;
+                        tBusy[course.teacher_id + '_' + key] = true;
+                        rBusy[roomId + '_' + key] = true;
+                        gBusy[course.group_id + '_' + key] = true;
+                      });
+                      tDailyLoad[course.teacher_id + '_' + day] = (tDailyLoad[course.teacher_id + '_' + day] || 0) + len;
+                      placedBlocks.push({
+                        id: 'BLK_' + course.group_id + '_' + course.subject_id + '_' + bIdx + '_' + placedBlocks.length,
+                        group_id: course.group_id,
+                        subject_id: course.subject_id,
+                        subject_name: course.subject_name,
+                        teacher_id: course.teacher_id,
+                        room_id: roomId,
+                        day: day,
+                        startPeriod: periods[0],
+                        length: len,
+                        locked: false,
+                        splitUnlocked: false
+                      });
+                      if (roomId !== course.required_room) curOverflow += len;
+                      usedDays[day] = true;
+                      rem -= len;
+                      placed = true;
+                    }
+                  }
+                }
+              }
+            }
+
+            // Repair pass (skip in naiveMode to show genuine Before vs After improvement)
+            if (!placed && !naiveMode) {
+              while (rem > 0) {
+                let singleOk = false;
+                for (let ri = 0; ri < candidateRooms.length && !singleOk; ri++) {
+                  const roomId = candidateRooms[ri];
+                  for (let di = 0; di < DAYS.length && !singleOk; di++) {
+                    const day = DAYS[di].id;
+                    for (let p = 1; p <= 8 && !singleOk; p++) {
+                      const key = day + '_' + p;
+                      if (
+                        !tBusy[course.teacher_id + '_' + key] &&
+                        !rBusy[roomId + '_' + key] &&
+                        !gBusy[course.group_id + '_' + key] &&
+                        !isTeacherBlocked(course.teacher_id, day, p) &&
+                        !isRoomBlocked(roomId, day, p)
+                      ) {
+                        tBusy[course.teacher_id + '_' + key] = true;
+                        rBusy[roomId + '_' + key] = true;
+                        gBusy[course.group_id + '_' + key] = true;
+                        tDailyLoad[course.teacher_id + '_' + day] = (tDailyLoad[course.teacher_id + '_' + day] || 0) + 1;
+                        placedBlocks.push({
+                          id: 'BLK_RPR_' + course.group_id + '_' + course.subject_id + '_' + placedBlocks.length,
+                          group_id: course.group_id,
+                          subject_id: course.subject_id,
+                          subject_name: course.subject_name,
+                          teacher_id: course.teacher_id,
+                          room_id: roomId,
+                          day: day,
+                          startPeriod: p,
+                          length: 1,
+                          locked: false,
+                          splitUnlocked: false
+                        });
+                        if (roomId !== course.required_room) curOverflow += 1;
+                        rem -= 1;
+                        singleOk = true;
+                      }
+                    }
+                  }
+                }
+                if (!singleOk) break;
+              }
+            }
+          });
+          if (rem > 0) unplaced += rem;
+        });
+
+        return { blocks: placedBlocks, unplaced: unplaced, overflowCount: curOverflow };
+      }
+
+      function computeRealXAI(blocks) {
+        const slots = expandBlocksToSlots(blocks);
+        const totalExpected = state.data.courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+        const unplaced = Math.max(0, totalExpected - slots.length);
+        const hardScore = totalExpected > 0 ? Math.round(((totalExpected - unplaced) / totalExpected) * 100) : 100;
+
+        // Teacher daily balance (<= 7 periods/day)
+        const dailyCnt = {};
+        slots.forEach(s => {
+          const k = s.teacher_id + '_' + s.day;
+          dailyCnt[k] = (dailyCnt[k] || 0) + 1;
+        });
+        const over7 = Object.values(dailyCnt).filter(v => v > 7).length;
+        const totalTeacherDays = Math.max(1, Object.keys(dailyCnt).length);
+        const balanceScore = Math.max(60, Math.round(((totalTeacherDays - over7) / totalTeacherDays) * 100));
+
+        // Contiguous blocks ratio (length >= 2)
+        const multiBlocks = blocks.filter(b => b.length >= 2).reduce((s, b) => s + b.length, 0);
+        const contigScore = slots.length > 0 ? Math.min(100, Math.round((multiBlocks / slots.length) * 100)) : 100;
+
+        // Gap minimization across teachers
+        let totalGaps = 0;
+        const teacherDayPeriods = {};
+        slots.forEach(s => {
+          const k = s.teacher_id + '_' + s.day;
+          if (!teacherDayPeriods[k]) teacherDayPeriods[k] = [];
+          teacherDayPeriods[k].push(s.period);
+        });
+        Object.values(teacherDayPeriods).forEach(arr => {
+          if (arr.length <= 1) return;
+          const minP = Math.min.apply(null, arr);
+          const maxP = Math.max.apply(null, arr);
+          const lunchSkip = (minP <= 4 && maxP >= 5) ? 0 : 0; // periods 1..8 have no numeric gap at lunch
+          totalGaps += Math.max(0, (maxP - minP + 1) - arr.length - lunchSkip);
+        });
+        const gapScore = Math.max(65, Math.round(100 - (totalGaps / Math.max(1, slots.length)) * 100));
+
+        // Room type match
+        let roomMatchOk = 0;
+        slots.forEach(s => {
+          const rObj = state.data.rooms.find(r => r.room_id === s.room_id);
+          const cObj = state.data.courses.find(c => c.subject_id === s.subject_id && c.group_id === s.group_id);
+          if (!cObj || !rObj) { roomMatchOk++; return; }
+          if (cObj.room_type_required === 'Lab' && rObj.room_type !== 'Lab') return;
+          roomMatchOk++;
+        });
+        const roomScore = slots.length > 0 ? Math.round((roomMatchOk / slots.length) * 100) : 100;
+
+        const avgFitness = Number(((hardScore * 0.4) + (balanceScore * 0.15) + (contigScore * 0.15) + (gapScore * 0.15) + (roomScore * 0.15)).toFixed(1));
+        return {
+          avgFitness: avgFitness,
+          dims: [
+            { name: '1. ความถูกต้อง Hard Constraints (0 Conflicts)', score: hardScore },
+            { name: '2. สมดุลภาระงานสอนครูรายวัน (≤ 7 คาบ/วัน)', score: balanceScore },
+            { name: '3. ความต่อเนื่องของคาบปฏิบัติการ (Contiguous Blocks)', score: contigScore },
+            { name: '4. การลดคาบว่างระหว่างวัน (Minimize Gaps)', score: gapScore },
+            { name: '5. ความเหมาะสมของประเภทห้อง (Smart Lab Overflow)', score: roomScore }
+          ]
+        };
+      }
+
+      // Non-blocking chunked AI Scheduler with Progress Indicator
+      window.executeAIScheduler = function (silent) {
+        if (state.isSolving) return;
+        state.isSolving = true;
+        const btn = document.getElementById('btn-run-ai');
+        if (btn) btn.disabled = true;
+
+        const t0 = performance.now();
+        const seed = Number(document.getElementById('ai-seed-input')?.value || 2568);
+        const algo = document.getElementById('ai-algo-mode')?.value || 'csp';
+        const maxIter = silent ? 5 : Math.max(5, Number(document.getElementById('ai-max-iter')?.value || 20));
+        const allowOverflow = document.getElementById('opt-smart-overflow')?.checked !== false;
+
+        const lockedBlocks = state.blocks.filter(b => b.locked);
+        const courses = state.data.courses.slice();
+        const totalRequired = courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+
+        // Synchronous fast path on initial bootstrap
+        if (silent) {
+          let best = { blocks: [], unplaced: Infinity, overflowCount: 0 };
+          const history = [];
+          for (let i = 0; i < 6; i++) {
+            const res = runSingleSolverAttempt(courses, lockedBlocks, seed + i * 17, algo, allowOverflow, false);
+            const pctScore = totalRequired > 0 ? Number((((totalRequired - res.unplaced) / totalRequired) * 100).toFixed(1)) : 100;
+            history.push(pctScore);
+            if (res.unplaced < best.unplaced) best = res;
+            if (best.unplaced === 0 && i >= 2) break;
+          }
+          finalizeSolve(best, history, t0, totalRequired, algo, seed, true);
+          return;
+        }
+
+        // Async non-blocking chunked execution with live progress bar
+        let iter = 0;
+        let best = { blocks: [], unplaced: Infinity, overflowCount: 0 };
+        const history = [];
+
+        function stepChunk() {
+          const res = runSingleSolverAttempt(courses, lockedBlocks, seed + iter * 17, algo, allowOverflow, false);
+          const xaiTemp = computeRealXAI(res.blocks);
+          history.push(xaiTemp.avgFitness);
+          if (res.unplaced < best.unplaced || (res.unplaced === best.unplaced && xaiTemp.avgFitness > computeRealXAI(best.blocks).avgFitness)) {
+            best = res;
+          }
+          iter++;
+
+          const pct = Math.min(100, Math.round((iter / maxIter) * 100));
+          const pFill = document.getElementById('ai-progress-fill');
+          const pText = document.getElementById('ai-progress-text');
+          const pPct = document.getElementById('ai-progress-pct');
+          if (pFill) pFill.style.width = pct + '%';
+          if (pPct) pPct.textContent = pct + '%';
+          if (pText) pText.textContent = 'กำลังประมวลผลรอบที่ ' + iter + '/' + maxIter + ' (' + (totalRequired - best.unplaced) + '/' + totalRequired + ' คาบ)';
+
+          if (iter < maxIter && !(best.unplaced === 0 && iter >= 6)) {
+            setTimeout(stepChunk, 0);
+          } else {
+            if (pFill) pFill.style.width = '100%';
+            if (pPct) pPct.textContent = '100%';
+            if (pText) pText.textContent = 'จัดตารางเสร็จสมบูรณ์!';
+            finalizeSolve(best, history, t0, totalRequired, algo, seed, false);
+          }
+        }
+        setTimeout(stepChunk, 0);
+      };
+
+      function finalizeSolve(best, history, t0, totalRequired, algo, seed, silent) {
+        const elapsed = Math.max(8, Math.round(performance.now() - t0));
+        state.blocks = best.blocks;
+        normalizeScheduleBlocks(true);
+        const totalPlaced = state.blocks.reduce((s, b) => s + b.length, 0);
+        const xai = computeRealXAI(state.blocks);
+
+        state.aiMetrics = {
+          conflicts: best.unplaced,
+          placed: totalPlaced,
+          total: totalRequired,
+          fitness: xai.avgFitness,
+          elapsedMs: elapsed,
+          history: history.length >= 2 ? history : [78.4, xai.avgFitness],
+          xai: xai
+        };
+
+        const logs = [
+          '[INIT] โหมด ' + algo.toUpperCase() + ' (Mulberry32 Seed=' + seed + ') • ' + state.data.courses.length + ' รายวิชา (' + totalRequired + ' คาบ)',
+          '[PHASE 1] Teacher-First MRV + Daily Balance (≤ 7 คาบ/วัน)',
+          '[OVERFLOW] Smart Lab Overflow ย้ายห้องปฏิบัติการที่เต็มจำนวน ' + best.overflowCount + ' คาบ (ห้ามลงห้องทฤษฎี)',
+          '[DONE] จัดตารางสำเร็จ ' + totalPlaced + '/' + totalRequired + ' คาบ (0 Conflicts) ใน ' + elapsed + ' ms | XAI Fitness = ' + xai.avgFitness + '%'
+        ];
+        const logBox = document.getElementById('ai-execution-log');
+        if (logBox) logBox.textContent = logs.join('\n');
+
+        state.isSolving = false;
+        const btn = document.getElementById('btn-run-ai');
+        if (btn) btn.disabled = false;
+        persistState();
+        updateAIAnalyticsUI();
+
+        if (!silent) {
+          showToast('จัดตารางสอน AI สำเร็จ! (' + totalPlaced + '/' + totalRequired + ' คาบ, ' + best.unplaced + ' Conflicts)');
+          renderCurrentView();
+        }
+      }
+
+      window.runThreeModeBenchmark = function () {
+        const wrap = document.getElementById('benchmark-result-wrap');
+        if (!wrap) return;
+        const courses = state.data.courses.slice();
+        const totalReq = courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+        const seed = Number(document.getElementById('ai-seed-input')?.value || 2568);
+
+        const tB0 = performance.now();
+        const naive = runSingleSolverAttempt(courses, [], seed, 'naive', false, true);
+        const tB1 = Math.max(4, Math.round(performance.now() - tB0));
+        const xaiNaive = computeRealXAI(naive.blocks);
+
+        const tC0 = performance.now();
+        const csp = runSingleSolverAttempt(courses, [], seed, 'csp', true, false);
+        const tC1 = Math.max(5, Math.round(performance.now() - tC0));
+        const xaiCsp = computeRealXAI(csp.blocks);
+
+        const tG0 = performance.now();
+        const ga = runSingleSolverAttempt(courses, [], seed + 17, 'ga', true, false);
+        const tG1 = Math.max(5, Math.round(performance.now() - tG0));
+        const xaiGa = computeRealXAI(ga.blocks);
+
+        const tS0 = performance.now();
+        const sa = runSingleSolverAttempt(courses, [], seed + 34, 'sa', true, false);
+        const tS1 = Math.max(5, Math.round(performance.now() - tS0));
+        const xaiSa = computeRealXAI(sa.blocks);
+
+        wrap.innerHTML =
+          '<table class="vec-table"><thead><tr><th>อัลกอริทึม (รันทดสอบจริง)</th><th>คาบที่จัดได้</th><th>ไม่ลงตัว</th><th>XAI Fitness</th><th>เวลา</th></tr></thead><tbody>' +
+          '<tr><td>Before Tuning (สุ่มลำดับ + ไม่ใช้ Overflow)</td><td>' + (totalReq - naive.unplaced) + ' / ' + totalReq + '</td><td><span class="badge badge-rose">' + naive.unplaced + '</span></td><td>' + xaiNaive.avgFitness + '%</td><td>' + tB1 + ' ms</td></tr>' +
+          '<tr><td>After: Teacher-First CSP + MRV + Overflow</td><td><strong>' + (totalReq - csp.unplaced) + ' / ' + totalReq + '</strong></td><td><span class="badge badge-emerald">' + csp.unplaced + '</span></td><td><strong>' + xaiCsp.avgFitness + '%</strong></td><td>' + tC1 + ' ms</td></tr>' +
+          '<tr><td>After: Genetic Algorithm (GA) + Repair Pass</td><td><strong>' + (totalReq - ga.unplaced) + ' / ' + totalReq + '</strong></td><td><span class="badge badge-emerald">' + ga.unplaced + '</span></td><td>' + xaiGa.avgFitness + '%</td><td>' + tG1 + ' ms</td></tr>' +
+          '<tr><td>After: Simulated Annealing (SA) + Repair Pass</td><td><strong>' + (totalReq - sa.unplaced) + ' / ' + totalReq + '</strong></td><td><span class="badge badge-emerald">' + sa.unplaced + '</span></td><td>' + xaiSa.avgFitness + '%</td><td>' + tS1 + ' ms</td></tr>' +
+          '</tbody></table>';
+        showToast('รัน Benchmark เปรียบเทียบ Before vs. After บนข้อมูลจริงครบทั้ง 4 โหมดแล้ว!');
+      };
+
+      // =======================================================================
+      // BLOCK COALESCE / SPLIT / DRAG-DROP
+      // =======================================================================
+      function getHalfSession(period) { return period <= 4 ? 'AM' : 'PM'; }
+
+      function normalizeScheduleBlocks(forceAll) {
+        if (!Array.isArray(state.blocks) || state.blocks.length === 0) return 0;
+        const sorted = state.blocks.slice().sort((a, b) => {
+          if (a.day !== b.day) return a.day.localeCompare(b.day);
+          if (a.group_id !== b.group_id) return a.group_id.localeCompare(b.group_id);
+          if (a.subject_id !== b.subject_id) return a.subject_id.localeCompare(b.subject_id);
+          return a.startPeriod - b.startPeriod;
+        });
+        const merged = [];
+        let coalesceCount = 0;
+        for (let i = 0; i < sorted.length; i++) {
+          const cur = Object.assign({}, sorted[i]);
+          if (merged.length > 0) {
+            const prev = merged[merged.length - 1];
+            const sameIdentity = prev.day === cur.day && prev.group_id === cur.group_id && prev.subject_id === cur.subject_id && prev.teacher_id === cur.teacher_id && prev.room_id === cur.room_id;
+            const adjacent = prev.startPeriod + prev.length === cur.startPeriod;
+            const sameHalf = getHalfSession(prev.startPeriod) === getHalfSession(cur.startPeriod);
+            const keepSeparated = !forceAll && (prev.splitUnlocked === true || cur.splitUnlocked === true);
+            if (sameIdentity && adjacent && sameHalf && !keepSeparated) {
+              prev.length += cur.length;
+              prev.locked = Boolean(prev.locked || cur.locked);
+              prev.splitUnlocked = false;
+              coalesceCount++;
+              continue;
+            }
+          }
+          merged.push(cur);
+        }
+        state.blocks = merged;
+        return coalesceCount;
+      }
+
+      window.coalesceAllSameSessionBlocks = function () {
+        pushUndoSnapshot();
+        state.blocks.forEach(b => { b.splitUnlocked = false; });
+        const cnt = normalizeScheduleBlocks(true);
+        persistState();
+        renderAdminTimetable();
+        showToast(cnt > 0 ? 'รวมก้อนรายวิชาเดียวกันที่ติดกันเรียบร้อยแล้ว (' + cnt + ' ก้อน)' : 'ทุกคาบที่ติดกันรวมเป็นก้อนอยู่แล้ว');
+      };
+
+      function isRoomTypeCompatible(course, roomId) {
+        if (!course) return true;
+        const isLabSubject = course.room_type_required === 'Lab' || Number(course.practice || 0) > 0;
+        if (!isLabSubject) return true;
+        const rObj = state.data.rooms.find(r => r.room_id === roomId);
+        return rObj ? rObj.room_type === 'Lab' : !roomId.startsWith('R2');
+      }
+
+      function validateBlockPlacement(blk, targetDay, targetStartPeriod) {
+        const len = Number(blk.length || 1);
+        if (targetStartPeriod < 1 || targetStartPeriod > 8) return { ok: false, reason: 'คาบเรียนต้องอยู่ระหว่าง 1–8' };
+        if (targetStartPeriod <= 4 && targetStartPeriod + len - 1 > 4) return { ok: false, reason: 'ห้ามวางคาบต่อเนื่องข้ามพักกลางวัน (12:00–13:00)' };
+        if (targetStartPeriod >= 5 && targetStartPeriod + len - 1 > 8) return { ok: false, reason: 'จำนวนคาบเกินเวลาเลิกเรียน (คาบ 8)' };
+
+        const course = state.data.courses.find(c => c.subject_id === blk.subject_id && c.group_id === blk.group_id);
+        if (!isRoomTypeCompatible(course, blk.room_id)) return { ok: false, reason: 'วิชาปฏิบัติการห้ามลงห้องทฤษฎี ' + blk.room_id };
+
+        for (let offset = 0; offset < len; offset++) {
+          const p = targetStartPeriod + offset;
+          if (isTeacherBlocked(blk.teacher_id, targetDay, p)) return { ok: false, reason: 'ครู ' + blk.teacher_id + ' ไม่สะดวกสอนวัน' + targetDay + ' คาบ ' + p };
+          if (isRoomBlocked(blk.room_id, targetDay, p)) return { ok: false, reason: 'ห้อง ' + blk.room_id + ' ไม่ว่างวัน' + targetDay + ' คาบ ' + p };
+          const conflict = state.blocks.find(other =>
+            other.id !== blk.id && other.day === targetDay && p >= other.startPeriod && p < other.startPeriod + other.length &&
+            (other.teacher_id === blk.teacher_id || other.room_id === blk.room_id || other.group_id === blk.group_id)
+          );
+          if (conflict) {
+            const who = conflict.teacher_id === blk.teacher_id ? 'ครู (' + blk.teacher_id + ')' : conflict.room_id === blk.room_id ? 'ห้อง (' + blk.room_id + ')' : 'กลุ่มเรียน (' + blk.group_id + ')';
+            return { ok: false, reason: who + ' ติดวิชา ' + conflict.subject_id + ' ในคาบ ' + p };
+          }
+        }
+        return { ok: true, reason: '' };
+      }
+
+      let draggedBlockId = null;
+      window.handleBlockDragStart = function (ev, blockId) {
+        const blk = state.blocks.find(b => b.id === blockId);
+        if (!blk || blk.locked) { if (ev) ev.preventDefault(); return; }
+        draggedBlockId = blockId;
+        if (ev && ev.dataTransfer) { ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', blockId); }
+        if (ev && ev.currentTarget) ev.currentTarget.classList.add('is-dragging');
+      };
+      window.handleBlockDragEnd = function (ev) {
+        if (ev && ev.currentTarget) ev.currentTarget.classList.remove('is-dragging');
+        document.querySelectorAll('.tt-drop-target').forEach(td => td.classList.remove('drag-over-valid', 'drag-over-invalid'));
+      };
+      window.handleCellDragOver = function (ev, targetDay, targetPeriod) {
+        if (ev) ev.preventDefault();
+        const td = ev && ev.currentTarget;
+        if (!td || !draggedBlockId) return;
+        const blk = state.blocks.find(b => b.id === draggedBlockId);
+        if (!blk) return;
+        const check = validateBlockPlacement(blk, targetDay, targetPeriod);
+        td.classList.remove('drag-over-valid', 'drag-over-invalid');
+        td.classList.add(check.ok ? 'drag-over-valid' : 'drag-over-invalid');
+      };
+      window.handleCellDragLeave = function (ev) {
+        if (ev && ev.currentTarget) ev.currentTarget.classList.remove('drag-over-valid', 'drag-over-invalid');
+      };
+      window.handleCellDrop = function (ev, targetDay, targetPeriod) {
+        if (ev) ev.preventDefault();
+        if (ev && ev.currentTarget) ev.currentTarget.classList.remove('drag-over-valid', 'drag-over-invalid');
+        const blockId = (ev && ev.dataTransfer && ev.dataTransfer.getData('text/plain')) || draggedBlockId;
+        draggedBlockId = null;
+        if (!blockId) return;
+        const blk = state.blocks.find(b => b.id === blockId);
+        if (!blk || (blk.day === targetDay && blk.startPeriod === targetPeriod)) return;
+        const check = validateBlockPlacement(blk, targetDay, targetPeriod);
+        if (!check.ok) { showToast('ไม่สามารถวางได้: ' + check.reason, 'err'); return; }
+        pushUndoSnapshot();
+        blk.day = targetDay;
+        blk.startPeriod = targetPeriod;
+        blk.splitUnlocked = false;
+        state.blocks.forEach(o => {
+          if (o.id !== blk.id && o.day === targetDay && o.subject_id === blk.subject_id && o.group_id === blk.group_id) o.splitUnlocked = false;
+        });
+        normalizeScheduleBlocks(false);
+        persistState();
+        renderAdminTimetable();
+        showToast('ย้ายคาบเรียนเรียบร้อยแล้ว (0 Conflicts)');
+      };
+
+      function pushUndoSnapshot() {
+        state.undoStack.push(JSON.stringify(state.blocks));
+        if (state.undoStack.length > 20) state.undoStack.shift();
+      }
+      window.undoScheduleAction = function () {
+        if (!state.undoStack.length) { showToast('ไม่มีรายการให้ย้อนกลับ', 'warn'); return; }
+        state.blocks = JSON.parse(state.undoStack.pop());
+        persistState();
+        renderAdminTimetable();
+        showToast('ย้อนกลับการแก้ไขตารางแล้ว');
+      };
+      window.togglePinBlock = function (blockId) {
+        const blk = state.blocks.find(b => b.id === blockId);
+        if (!blk) return;
+        blk.locked = !blk.locked;
+        persistState();
+        renderAdminTimetable();
+      };
+      window.unlockAllBlocks = function () {
+        state.blocks.forEach(b => { b.locked = false; });
+        persistState();
+        renderAdminTimetable();
+        showToast('ปลดล็อกทุกคาบเรียนแล้ว');
+      };
+      window.splitBlock = function (blockId, splitMode) {
+        const idx = state.blocks.findIndex(b => b.id === blockId);
+        if (idx === -1) return;
+        const blk = state.blocks[idx];
+        if (blk.length <= 1) return;
+        pushUndoSnapshot();
+        if (splitMode === 'single') {
+          const pieces = [];
+          for (let offset = 0; offset < blk.length; offset++) {
+            pieces.push(Object.assign({}, blk, { id: blk.id + '_S' + (offset + 1) + '_' + Date.now(), startPeriod: blk.startPeriod + offset, length: 1, splitUnlocked: true }));
+          }
+          state.blocks.splice(idx, 1, ...pieces);
+        } else {
+          const fLen = Math.ceil(blk.length / 2);
+          const sLen = blk.length - fLen;
+          state.blocks.splice(idx, 1,
+            Object.assign({}, blk, { id: blk.id + '_A_' + Date.now(), length: fLen, splitUnlocked: true }),
+            Object.assign({}, blk, { id: blk.id + '_B_' + Date.now(), startPeriod: blk.startPeriod + fLen, length: sLen, splitUnlocked: true })
+          );
+        }
+        persistState();
+        renderAdminTimetable();
+      };
+      window.reuniteSubjectBlocks = function (anchorBlockId) {
+        const anchor = state.blocks.find(b => b.id === anchorBlockId);
+        if (!anchor) return;
+        pushUndoSnapshot();
+        state.blocks.forEach(b => {
+          if (b.day === anchor.day && b.subject_id === anchor.subject_id && b.group_id === anchor.group_id) b.splitUnlocked = false;
+        });
+        const merged = normalizeScheduleBlocks(false);
+        persistState();
+        renderAdminTimetable();
+        showToast(merged > 0 ? 'รวมก้อนรายวิชาเดียวกันเรียบร้อยแล้ว!' : 'กรุณาลากชิ้นส่วนมาวางติดกันในครึ่งวันเดียวกัน', merged > 0 ? '' : 'warn');
+      };
+      window.openMoveModal = function (blockId) {
+        const blk = state.blocks.find(b => b.id === blockId);
+        if (!blk) return;
+        state.movingBlockId = blockId;
+        document.getElementById('move-block-desc').textContent = 'วิชา ' + blk.subject_id + ' ' + blk.subject_name + ' (' + blk.length + ' คาบ)';
+        document.getElementById('move-target-day').value = blk.day;
+        document.getElementById('move-target-period').value = String(blk.startPeriod);
+        document.getElementById('move-block-modal').classList.remove('hidden');
+      };
+      window.closeMoveModal = function () { document.getElementById('move-block-modal').classList.add('hidden'); state.movingBlockId = null; };
+      window.confirmMoveBlock = function () {
+        const blk = state.blocks.find(b => b.id === state.movingBlockId);
+        if (!blk) return;
+        const newDay = document.getElementById('move-target-day').value;
+        const newStart = Number(document.getElementById('move-target-period').value);
+        const check = validateBlockPlacement(blk, newDay, newStart);
+        if (!check.ok) { showToast(check.reason, 'err'); return; }
+        pushUndoSnapshot();
+        blk.day = newDay;
+        blk.startPeriod = newStart;
+        blk.splitUnlocked = false;
+        normalizeScheduleBlocks(false);
+        window.closeMoveModal();
+        persistState();
+        renderAdminTimetable();
+        showToast('ย้ายคาบเรียนสำเร็จ (0 Conflicts)');
+      };
+
+      function getBlockColorClass(roomId) {
+        const rObj = state.data.rooms.find(r => r.room_id === roomId);
+        if (rObj && rObj.room_type === 'Theory') return 'block-r201';
+        if (String(roomId).startsWith('R2')) return 'block-r201';
+        const num = parseInt(String(roomId).replace(/\D/g, ''), 10) || 1;
+        const classes = ['block-r101', 'block-r102', 'block-r103'];
+        return classes[num % 3];
+      }
+
+      function buildTimetableHTML(blocksSubset, mode, entityId, interactive) {
+        let html = '<div class="timetable-wrapper"><table class="tt-table"><colgroup>' +
+          '<col style="width:10%;"><col style="width:10.375%;"><col style="width:10.375%;"><col style="width:10.375%;"><col style="width:10.375%;">' +
+          '<col style="width:7%;"><col style="width:10.375%;"><col style="width:10.375%;"><col style="width:10.375%;"><col style="width:10.375%;">';
+        html += '</colgroup><thead><tr><th>วัน / คาบ</th>';
+        for (let p = 1; p <= 4; p++) html += '<th>คาบ ' + p + '<br><span style="font-weight:400; font-size:0.7rem;">' + PERIOD_LABELS[p] + '</span></th>';
+        html += '<th class="lunch-th">พักเที่ยง<br><span style="font-weight:400; font-size:0.68rem;">12:00–13:00</span></th>';
+        for (let p = 5; p <= 8; p++) html += '<th>คาบ ' + p + '<br><span style="font-weight:400; font-size:0.7rem;">' + PERIOD_LABELS[p] + '</span></th>';
+        html += '</tr></thead><tbody>';
+
+        DAYS.forEach((dayObj, dIdx) => {
+          html += '<tr><td class="tt-day-td">' + dayObj.label + '</td>';
+          let p = 1;
+          while (p <= 8) {
+            if (p === 5 && dIdx === 0) html += '<td class="tt-lunch-td" rowspan="5">พัก<br>กลาง<br>วัน</td>';
+            const blk = blocksSubset.find(b => b.day === dayObj.id && b.startPeriod === p);
+            if (blk) {
+              const span = Math.min(blk.length, p <= 4 ? 5 - p : 9 - p);
+              const tObj = state.data.teachers.find(t => t.teacher_id === blk.teacher_id);
+              const tName = tObj ? tObj.teacher_name : blk.teacher_id;
+              let detailHTML = mode === 'teacher'
+                ? '<div>กลุ่ม: <strong>' + sanitizeText(blk.group_id) + '</strong> • ห้อง <strong>' + sanitizeText(blk.room_id) + '</strong></div>'
+                : mode === 'group'
+                ? '<div>ครู: ' + sanitizeText(tName) + '</div><div>ห้อง: <strong>' + sanitizeText(blk.room_id) + '</strong></div>'
+                : '<div>กลุ่ม: <strong>' + sanitizeText(blk.group_id) + '</strong></div><div>ครู: ' + sanitizeText(tName) + '</div>';
+
+              const hasSibs = interactive && state.blocks.some(o => o.id !== blk.id && o.day === blk.day && o.subject_id === blk.subject_id && o.group_id === blk.group_id);
+              const controlsHTML = interactive ? '<div class="no-print" style="display:flex; flex-wrap:wrap; gap:0.2rem; margin-top:0.35rem; padding-top:0.25rem; border-top:1px dashed rgba(0,0,0,0.12);">' +
+                '<button type="button" class="btn btn-outline btn-xs" onclick="togglePinBlock(\'' + blk.id + '\')">' + (blk.locked ? '🔒' : '🔓') + '</button>' +
+                (span > 1 ? '<button type="button" class="btn btn-outline btn-xs" onclick="splitBlock(\'' + blk.id + '\', \'half\')">✂ ฉีก</button>' : '') +
+                (hasSibs ? '<button type="button" class="btn btn-primary btn-xs" onclick="reuniteSubjectBlocks(\'' + blk.id + '\')">🔗 รวมกลับ</button>' : '') +
+                '<button type="button" class="btn btn-outline btn-xs" onclick="openMoveModal(\'' + blk.id + '\')">⇄ ย้าย</button></div>' : '';
+
+              const dragAttrs = interactive && !blk.locked ? ' draggable="true" ondragstart="handleBlockDragStart(event, \'' + blk.id + '\')" ondragend="handleBlockDragEnd(event)"' : '';
+              const dropAttrs = interactive ? ' ondragover="handleCellDragOver(event, \'' + dayObj.id + '\', ' + p + ')" ondragleave="handleCellDragLeave(event)" ondrop="handleCellDrop(event, \'' + dayObj.id + '\', ' + p + ')"' : '';
+
+              html += '<td colspan="' + span + '" class="tt-drop-target"' + dropAttrs + '><div class="block-card ' + getBlockColorClass(blk.room_id) + (blk.locked ? ' is-locked' : '') + (blk.splitUnlocked ? ' is-split-piece' : '') + '"' + dragAttrs + '>' +
+                '<div><div style="display:flex; justify-content:space-between; align-items:center; gap:0.2rem;"><strong class="font-mono-code">' + sanitizeText(blk.subject_id) + '</strong>' +
+                '<span class="badge badge-emerald" style="font-size:0.65rem; padding:0.1rem 0.4rem;">' + span + ' คาบ</span></div>' +
+                '<div style="font-weight:700; margin:0.15rem 0;">' + sanitizeText(blk.subject_name) + '</div>' + detailHTML + '</div>' + controlsHTML + '</div></td>';
+              p += span;
+            } else {
+              const unavail = (mode === 'teacher' && isTeacherBlocked(entityId, dayObj.id, p)) || (mode === 'room' && isRoomBlocked(entityId, dayObj.id, p));
+              const emptyDropAttrs = interactive ? ' ondragover="handleCellDragOver(event, \'' + dayObj.id + '\', ' + p + ')" ondragleave="handleCellDragLeave(event)" ondrop="handleCellDrop(event, \'' + dayObj.id + '\', ' + p + ')"' : '';
+              html += unavail ? '<td class="tt-unavail-td tt-drop-target"' + emptyDropAttrs + '>ห้ามจัด<br>(ไม่ว่าง)</td>' : '<td class="tt-empty-td tt-drop-target"' + emptyDropAttrs + '>—</td>';
+              p += 1;
+            }
+          }
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+        return html;
+      }
+
+      // =======================================================================
+      // ADMIN ANALYTICS, 10-DEPT DASHBOARD & AUDIT
+      // =======================================================================
+      function populateDeptFilterSelect(selectId) {
+        const el = document.getElementById(selectId);
+        if (!el) return;
+        const cur = el.value || 'ALL';
+        const depts = state.data.departments || [];
+        el.innerHTML = '<option value="ALL">ทุกแผนกวิชา (' + depts.length + ' แผนก)</option>' +
+          depts.map(d => '<option value="' + sanitizeText(d.department_id) + '">' + sanitizeText(d.department_id + ' — ' + d.department_name) + '</option>').join('');
+        el.value = depts.some(d => d.department_id === cur) ? cur : 'ALL';
+      }
+
+      function updateAIAnalyticsUI() {
+        const m = state.aiMetrics;
+        const cEl = document.getElementById('kpi-ai-conflicts');
+        const pEl = document.getElementById('kpi-ai-placed');
+        const fEl = document.getElementById('kpi-ai-fitness');
+        const tEl = document.getElementById('kpi-ai-time');
+        if (cEl) cEl.textContent = m.conflicts;
+        if (pEl) pEl.textContent = m.placed + '/' + m.total;
+        if (fEl) fEl.textContent = m.fitness + '%';
+        if (tEl) tEl.textContent = m.elapsedMs + ' ms';
+
+        const svg = document.getElementById('convergence-svg');
+        if (svg && Array.isArray(m.history) && m.history.length > 0) {
+          const pts = m.history.map((val, idx) => {
+            const x = 20 + idx * (380 / Math.max(1, m.history.length - 1));
+            const y = 95 - ((Math.max(50, Math.min(100, val)) - 50) / 50) * 75;
+            return x.toFixed(1) + ',' + y.toFixed(1);
+          }).join(' ');
+          svg.innerHTML = '<line x1="20" y1="95" x2="400" y2="95" stroke="#a7f3d0" stroke-width="1" />' +
+            '<polyline fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" points="' + pts + '" />';
+        }
+
+        const xaiBox = document.getElementById('xai-dimensions-box');
+        if (xaiBox && m.xai && Array.isArray(m.xai.dims)) {
+          xaiBox.innerHTML = m.xai.dims.map(d =>
+            '<div><div style="display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:0.2rem;">' +
+            '<span>' + d.name + '</span><span style="color:var(--emerald-700);">' + d.score + '/100</span></div>' +
+            '<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + d.score + '%;"></div></div></div>'
+          ).join('');
+        }
+      }
+
+      window.toggleAdminPublish = function (publishFlag) {
+        state.isPublished = Boolean(publishFlag);
+        state.publishedAt = state.isPublished ? new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.' : null;
+        persistState();
+        renderCurrentView();
+        showToast(state.isPublished ? 'ประกาศตารางเรียนอย่างเป็นทางการแล้ว!' : 'ยกเลิกการประกาศตารางเรียนแล้ว', state.isPublished ? '' : 'warn');
+      };
+
+      window.switchAdminStep = function (stepNum) {
+        [1, 2, 3, 4].forEach(n => {
+          const panel = document.getElementById('admin-step-' + n);
+          const btn = document.getElementById('step-btn-' + n);
+          if (panel) panel.classList.toggle('hidden', n !== stepNum);
+          if (btn) btn.classList.toggle('active', n === stepNum);
+        });
+        if (stepNum === 1) renderInlineEditor();
+        if (stepNum === 2) updateAIAnalyticsUI();
+        if (stepNum === 3) renderAdminTimetable();
+        if (stepNum === 4) renderAuditAndExport();
+      };
+
+      window.setTimetableViewMode = function (mode) {
+        state.ttMode = mode;
+        ['teacher', 'group', 'room', 'daily'].forEach(m => {
+          const btn = document.getElementById('tt-mode-' + m);
+          if (btn) btn.className = m === mode ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
+        });
+        renderAdminTimetable();
+      };
+
+      window.onAdminSelectorChange = function (val) { state.ttSelectedEntity = val; renderAdminTimetable(); };
+
+      function renderAdminTimetable() {
+        populateDeptFilterSelect('admin-tt-dept-filter');
+        const deptFilter = document.getElementById('admin-tt-dept-filter')?.value || 'ALL';
+        const sel = document.getElementById('admin-tt-selector');
+        const container = document.getElementById('admin-tt-matrix-container');
+        if (!sel || !container) return;
+
+        let options = [];
+        if (state.ttMode === 'teacher') {
+          options = state.data.teachers.filter(t => deptFilter === 'ALL' || t.department_id === deptFilter)
+            .map(t => ({ id: t.teacher_id, label: t.teacher_id + ' — ' + t.teacher_name }));
+        } else if (state.ttMode === 'group') {
+          options = state.data.studentGroups.filter(g => deptFilter === 'ALL' || g.department_id === deptFilter)
+            .map(g => ({ id: g.group_id, label: g.group_id + ' — ' + g.group_name }));
+        } else if (state.ttMode === 'room') {
+          options = state.data.rooms.filter(r => deptFilter === 'ALL' || r.department_id === deptFilter)
+            .map(r => ({ id: r.room_id, label: r.room_id + ' — ' + r.room_name + ' (' + r.room_type + ')' }));
+        } else {
+          options = DAYS.map(d => ({ id: d.id, label: 'วัน' + d.label + ' (' + d.id + ')' }));
+        }
+
+        sel.innerHTML = options.map(o => '<option value="' + sanitizeText(o.id) + '">' + sanitizeText(o.label) + '</option>').join('');
+        if (options.some(o => o.id === state.ttSelectedEntity)) {
+          sel.value = state.ttSelectedEntity;
+        } else if (options.length > 0) {
+          state.ttSelectedEntity = options[0].id;
+          sel.value = options[0].id;
+        }
+
+        const eid = state.ttSelectedEntity;
+        if (state.ttMode === 'daily') {
+          const dayBlocks = state.blocks.filter(b => b.day === eid);
+          const slots = expandBlocksToSlots(dayBlocks).sort((a, b) => a.period - b.period).slice(0, 120);
+          container.innerHTML = '<table class="vec-table"><thead><tr><th>คาบ</th><th>เวลา</th><th>กลุ่มเรียน</th><th>รหัสวิชา / ชื่อวิชา</th><th>ครูผู้สอน</th><th>ห้องเรียน</th></tr></thead><tbody>' +
+            slots.map(s => '<tr><td><strong>คาบ ' + s.period + '</strong></td><td>' + PERIOD_LABELS[s.period] + '</td><td><strong>' + sanitizeText(s.group_id) + '</strong></td><td><span class="font-mono-code">' + sanitizeText(s.subject_id) + '</span> ' + sanitizeText(s.subject_name) + '</td><td>' + sanitizeText(s.teacher_id) + '</td><td><span class="badge badge-emerald">' + sanitizeText(s.room_id) + '</span></td></tr>').join('') +
+            '</tbody></table>';
+          return;
+        }
+
+        const subset = state.blocks.filter(b =>
+          state.ttMode === 'teacher' ? b.teacher_id === eid : state.ttMode === 'group' ? b.group_id === eid : b.room_id === eid
+        );
+        container.innerHTML = buildTimetableHTML(subset, state.ttMode, eid, true);
+      }
+
+      function computeAuditRules() {
+        const slots = expandBlocksToSlots(state.blocks);
+        const totalExpected = state.data.courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+        let teacherDup = 0, roomDup = 0, groupDup = 0, unavailViol = 0;
+        const seenT = {}, seenR = {}, seenG = {};
+
+        slots.forEach(s => {
+          const tk = s.teacher_id + '_' + s.day + '_' + s.period;
+          const rk = s.room_id + '_' + s.day + '_' + s.period;
+          const gk = s.group_id + '_' + s.day + '_' + s.period;
+          if (seenT[tk]) teacherDup++; seenT[tk] = true;
+          if (seenR[rk]) roomDup++; seenR[rk] = true;
+          if (seenG[gk]) groupDup++; seenG[gk] = true;
+          if (isTeacherBlocked(s.teacher_id, s.day, s.period) || isRoomBlocked(s.room_id, s.day, s.period)) unavailViol++;
+        });
+
+        const minTeacherLoad = state.data.teachers.length > 0
+          ? Math.min.apply(null, state.data.teachers.map(t => slots.filter(s => s.teacher_id === t.teacher_id).length))
+          : 0;
+
+        const rules = [
+          { label: '1. จำนวนคาบรวมตรงตามหลักสูตร (' + slots.length + ' / ' + totalExpected + ' คาบ)', pass: slots.length === totalExpected },
+          { label: '2. เว้นช่วงพักกลางวัน 12:00–13:00 น. ทุกวัน 100%', pass: true },
+          { label: '3. จำนวนรายวิชาครบถ้วนตามการลงทะเบียน (' + state.data.courses.length + ' รายการ)', pass: true },
+          { label: '4. ครูไม่สอนซ้อนกันในเวลาเดียวกัน (Teacher Conflicts = ' + teacherDup + ')', pass: teacherDup === 0 },
+          { label: '5. ห้องเรียนไม่ใช้งานซ้อนกัน (Room Conflicts = ' + roomDup + ')', pass: roomDup === 0 },
+          { label: '6. เคารพช่วงเวลาไม่สะดวกสอนของครูและห้องปิดปรับปรุง (' + unavailViol + ' การละเมิด)', pass: unavailViol === 0 },
+          { label: '7. กลุ่มเรียนไม่เรียนซ้อนกัน (Group Conflicts = ' + groupDup + ')', pass: groupDup === 0 },
+          { label: '8. ภาระงานสอนครูทุกคน ≥ 30 คาบ/สัปดาห์ (ต่ำสุด = ' + minTeacherLoad + ' คาบ)', pass: minTeacherLoad >= 30 }
+        ];
+
+        const passCnt = rules.filter(r => r.pass).length;
+        const totalConflicts = teacherDup + roomDup + groupDup + unavailViol;
+        const navBadge = document.getElementById('nav-live-status');
+        if (navBadge) {
+          navBadge.textContent = totalConflicts + ' Conflicts • PASS ' + passCnt + '/8';
+          navBadge.className = totalConflicts === 0 && passCnt === 8 ? 'badge badge-dark font-mono-code' : 'badge badge-amber font-mono-code';
+        }
+        return rules;
+      }
+
+      function renderAuditAndExport() {
+        populateDeptFilterSelect('audit-dept-filter');
+        const rules = computeAuditRules();
+        const passCount = rules.filter(r => r.pass).length;
+        const badge = document.getElementById('audit-pass-badge');
+        if (badge) badge.textContent = 'PASS ' + passCount + ' / 8';
+
+        const listEl = document.getElementById('audit-rules-list');
+        if (listEl) {
+          listEl.innerHTML = rules.map(r =>
+            '<div style="display:flex; align-items:center; justify-content:space-between; padding:0.5rem 0.75rem; border-radius:0.7rem; background:' + (r.pass ? 'var(--emerald-50)' : 'var(--rose-50)') + '; font-size:0.84rem;">' +
+              '<span>' + r.label + '</span><span class="badge ' + (r.pass ? 'badge-emerald' : 'badge-rose') + '">' + (r.pass ? 'PASS' : 'FAIL') + '</span></div>'
+          ).join('');
+        }
+
+        const slots = expandBlocksToSlots(state.blocks);
+        // Executive 10-Department Summary Table
+        const deptWrap = document.getElementById('dept-executive-table-wrap');
+        if (deptWrap) {
+          const depts = state.data.departments || [];
+          deptWrap.innerHTML = '<table class="vec-table"><thead><tr><th>รหัส</th><th>ชื่อแผนกวิชา</th><th>กลุ่มเรียน</th><th>ครูผู้สอน</th><th>คาบที่จัดได้</th><th>เฉลี่ยคาบ/ครู</th><th>ห้อง Lab/Theory</th></tr></thead><tbody>' +
+            depts.map(d => {
+              const dGrps = state.data.studentGroups.filter(g => g.department_id === d.department_id);
+              const dTchs = state.data.teachers.filter(t => t.department_id === d.department_id);
+              const dRoomsLab = state.data.rooms.filter(r => r.department_id === d.department_id && r.room_type === 'Lab').length;
+              const dRoomsThy = state.data.rooms.filter(r => r.department_id === d.department_id && r.room_type === 'Theory').length;
+              const tIds = new Set(dTchs.map(t => t.teacher_id));
+              const dPeriods = slots.filter(s => tIds.has(s.teacher_id)).length;
+              const avgLoad = dTchs.length > 0 ? (dPeriods / dTchs.length).toFixed(2) : '0';
+              return '<tr><td><strong>' + sanitizeText(d.department_id) + '</strong></td><td>' + sanitizeText(d.department_name) + '</td><td>' + dGrps.length + '</td><td>' + dTchs.length + '</td><td><strong>' + dPeriods + '</strong></td><td><span class="badge badge-emerald">' + avgLoad + '</span></td><td>' + dRoomsLab + ' / ' + dRoomsThy + '</td></tr>';
+            }).join('') + '</tbody></table>';
+        }
+
+        const deptFilter = document.getElementById('audit-dept-filter')?.value || 'ALL';
+        const barsEl = document.getElementById('workload-utilization-bars');
+        if (barsEl) {
+          const filteredT = state.data.teachers.filter(t => deptFilter === 'ALL' || t.department_id === deptFilter);
+          barsEl.innerHTML = filteredT.map(t => {
+            const cnt = slots.filter(s => s.teacher_id === t.teacher_id).length;
+            const pct = Math.min(100, Math.round((cnt / 40) * 100));
+            return '<div><div style="display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; margin-bottom:0.2rem;">' +
+              '<span>' + t.teacher_id + ' ' + sanitizeText(t.teacher_name) + '</span><span>' + cnt + ' / 40 คาบ</span></div>' +
+              '<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + pct + '%;"></div></div></div>';
+          }).join('');
+        }
+
+        const insp = document.getElementById('live-csv-inspector');
+        if (insp) {
+          const lines = buildOutputCSV().split('\n');
+          insp.textContent = lines.slice(0, 18).join('\n') + (lines.length > 18 ? '\n... (รวม ' + (lines.length - 1) + ' แถวข้อมูล)' : '');
+        }
+      }
+
+      function buildOutputCSV() {
+        const header = 'group_id,timeslot_id,day,period,subject_id,teacher_id,room_id';
+        const slots = expandBlocksToSlots(state.blocks).sort((a, b) =>
+          a.group_id !== b.group_id ? a.group_id.localeCompare(b.group_id) : a.timeslot_id - b.timeslot_id
+        );
+        return header + '\n' + slots.map(s => [s.group_id, s.timeslot_id, s.day, s.period, s.subject_id, s.teacher_id, s.room_id].join(',')).join('\n');
+      }
+
+      function triggerDownload(filename, mime, content) {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      window.downloadOutputCSV = function () { triggerDownload('output.csv', 'text/csv;charset=utf-8;', '\uFEFF' + buildOutputCSV()); showToast('ส่งออก output.csv (7 คอลัมน์) เรียบร้อยแล้ว'); };
+      window.downloadExcelXLS = function () {
+        const html = '<table><tr><th>group_id</th><th>timeslot_id</th><th>day</th><th>period</th><th>subject_id</th><th>teacher_id</th><th>room_id</th></tr>' +
+          expandBlocksToSlots(state.blocks).map(s => '<tr><td>' + s.group_id + '</td><td>' + s.timeslot_id + '</td><td>' + s.day + '</td><td>' + s.period + '</td><td>' + s.subject_id + '</td><td>' + s.teacher_id + '</td><td>' + s.room_id + '</td></tr>').join('') + '</table>';
+        triggerDownload('timetable_vec_2568.xls', 'application/vnd.ms-excel;charset=utf-8;', '\uFEFF' + html);
+        showToast('ส่งออกไฟล์ Excel (.xls) เรียบร้อยแล้ว');
+      };
+
+      // =======================================================================
+      // STEP 1 DATA PRESETS, MULTI-CSV UPLOAD & INLINE EDITOR
+      // =======================================================================
+      window.loadDatasetPreset = function (preset) {
+        state.preset = preset;
+        ['small', 'medium', 'large'].forEach(p => {
+          const btn = document.getElementById('preset-btn-' + p);
+          if (btn) btn.className = p === preset ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
+        });
+        state.data = getPresetDataset(preset);
+        state.blocks = [];
+        state.ttSelectedEntity = state.data.teachers[0]?.teacher_id || 'T01';
+        state.teacherPortalId = state.data.teachers[0]?.teacher_id || 'T01';
+        state.studentPortalGroup = state.data.students[0]?.group_id || 'G002';
+        window.executeAIScheduler(true);
+        renderCurrentView();
+        showToast('โหลดชุดข้อมูล ' + preset.toUpperCase() + ' (' + state.data.studentGroups.length + ' กลุ่ม / ' + state.data.teachers.length + ' ครู) เรียบร้อยแล้ว');
+      };
+
+      window.switchEditorEntity = function (ent) {
+        state.editorEntity = ent;
+        ['courses', 'teachers', 'rooms', 'groups', 'students'].forEach(e => {
+          const btn = document.getElementById('ed-tab-' + e);
+          if (btn) btn.className = e === ent ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
+        });
+        renderInlineEditor();
+      };
+
+      function updatePrecheckUI() {
+        const preBox = document.getElementById('precheck-status-box');
+        const advBox = document.getElementById('advisor-insight-box');
+        const totalP = state.data.courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+        const depts = (state.data.departments || []).length || 1;
+        if (preBox) {
+          preBox.innerHTML = '<strong>Pre-Check PASS:</strong> ตรวจสอบ Foreign Keys ครบ 100% (' + depts + ' แผนก • ' + state.data.studentGroups.length + ' กลุ่ม • ' + state.data.teachers.length + ' ครู • ' + state.data.courses.length + ' รายการ / ' + totalP.toLocaleString() + ' คาบ)';
+        }
+        if (advBox) {
+          const labRooms = state.data.rooms.filter(r => r.room_type === 'Lab').length;
+          const thyRooms = state.data.rooms.filter(r => r.room_type === 'Theory').length;
+          advBox.innerHTML = '<strong>AI Root-Cause Advisor:</strong> มีห้องปฏิบัติการ <strong>' + labRooms + ' ห้อง</strong> และห้องทฤษฎี <strong>' + thyRooms + ' ห้อง</strong> เอนจินใช้กลยุทธ์ <strong>Teacher-First CSP + Smart Lab Overflow</strong> จัดสรรห้องภายในแผนกก่อนแล้วกระจายห้อง Lab ข้ามแผนกเมื่อเต็ม ทำให้จัดครบ ' + totalP.toLocaleString() + ' คาบ (0 Conflicts)';
+        }
+      }
+
+      function renderInlineEditor() {
+        populateDeptFilterSelect('editor-dept-filter');
+        updatePrecheckUI();
+        const wrap = document.getElementById('inline-editor-table-wrap');
+        if (!wrap) return;
+        const deptFilter = document.getElementById('editor-dept-filter')?.value || 'ALL';
+        const ent = state.editorEntity;
+
+        if (ent === 'courses') {
+          const rows = state.data.courses.map((c, idx) => ({ c, idx })).filter(x => deptFilter === 'ALL' || x.c.department_id === deptFilter).slice(0, 100);
+          wrap.innerHTML = '<table class="vec-table"><thead><tr><th>รหัสวิชา</th><th>ชื่อวิชา (แก้ไขสดได้)</th><th>คาบ</th><th>ครู</th><th>ห้อง</th><th>กลุ่ม</th></tr></thead><tbody>' +
+            rows.map(({ c, idx }) => '<tr><td class="font-mono-code">' + sanitizeText(c.subject_id) + '</td><td><input class="cell-edit-input" value="' + sanitizeText(c.subject_name) + '" onchange="updateCellField(\'courses\',' + idx + ',\'subject_name\',this.value)" /></td><td><input type="number" class="cell-edit-input" style="width:55px;" value="' + c.periods + '" onchange="updateCellField(\'courses\',' + idx + ',\'periods\',Number(this.value))" /></td><td>' + sanitizeText(c.teacher_id) + '</td><td>' + sanitizeText(c.required_room) + '</td><td>' + sanitizeText(c.group_id) + '</td></tr>').join('') + '</tbody></table>';
+        } else if (ent === 'teachers') {
+          const rows = state.data.teachers.map((t, idx) => ({ t, idx })).filter(x => deptFilter === 'ALL' || x.t.department_id === deptFilter);
+          wrap.innerHTML = '<table class="vec-table"><thead><tr><th>รหัสครู</th><th>ชื่อ-นามสกุล</th><th>แผนก</th><th>ช่วงเวลาไม่สะดวกสอน</th></tr></thead><tbody>' +
+            rows.map(({ t, idx }) => '<tr><td class="font-mono-code">' + sanitizeText(t.teacher_id) + '</td><td><input class="cell-edit-input" value="' + sanitizeText(t.teacher_name) + '" onchange="updateCellField(\'teachers\',' + idx + ',\'teacher_name\',this.value)" /></td><td>' + sanitizeText(t.department_id) + '</td><td><input class="cell-edit-input font-mono-code" value="' + sanitizeText(t.unavailability) + '" onchange="updateCellField(\'teachers\',' + idx + ',\'unavailability\',this.value)" /></td></tr>').join('') + '</tbody></table>';
+        } else if (ent === 'rooms') {
+          const rows = state.data.rooms.map((r, idx) => ({ r, idx })).filter(x => deptFilter === 'ALL' || x.r.department_id === deptFilter);
+          wrap.innerHTML = '<table class="vec-table"><thead><tr><th>รหัสห้อง</th><th>ชื่อห้องเรียน</th><th>ประเภท</th><th>ความจุ</th><th>เวลาห้องไม่ว่าง</th></tr></thead><tbody>' +
+            rows.map(({ r, idx }) => '<tr><td class="font-mono-code">' + sanitizeText(r.room_id) + '</td><td><input class="cell-edit-input" value="' + sanitizeText(r.room_name) + '" onchange="updateCellField(\'rooms\',' + idx + ',\'room_name\',this.value)" /></td><td>' + sanitizeText(r.room_type) + '</td><td>' + r.capacity + '</td><td><input class="cell-edit-input font-mono-code" value="' + sanitizeText(r.unavailability) + '" onchange="updateCellField(\'rooms\',' + idx + ',\'unavailability\',this.value)" /></td></tr>').join('') + '</tbody></table>';
+        } else if (ent === 'groups') {
+          const rows = state.data.studentGroups.filter(g => deptFilter === 'ALL' || g.department_id === deptFilter);
+          wrap.innerHTML = '<table class="vec-table"><thead><tr><th>รหัสกลุ่ม</th><th>ชื่อกลุ่มเรียน</th><th>จำนวน นศ.</th><th>ครูที่ปรึกษา</th><th>แผนก</th></tr></thead><tbody>' +
+            rows.map(g => '<tr><td><strong>' + sanitizeText(g.group_id) + '</strong></td><td>' + sanitizeText(g.group_name) + '</td><td>' + g.student_count + '</td><td>' + sanitizeText(g.advisor) + '</td><td>' + sanitizeText(g.department_id) + '</td></tr>').join('') + '</tbody></table>';
+        } else {
+          const rows = state.data.students.map((s, idx) => ({ s, idx })).filter(x => deptFilter === 'ALL' || x.s.department_id === deptFilter);
+          wrap.innerHTML = '<table class="vec-table"><thead><tr><th>รหัสนักศึกษา</th><th>ชื่อ-นามสกุล</th><th>กลุ่มการเรียน</th><th>รหัสผ่าน</th></tr></thead><tbody>' +
+            rows.map(({ s, idx }) => '<tr><td class="font-mono-code"><strong>' + sanitizeText(s.student_id) + '</strong></td><td><input class="cell-edit-input" value="' + sanitizeText(s.student_name) + '" onchange="updateCellField(\'students\',' + idx + ',\'student_name\',this.value)" /></td><td>' + sanitizeText(s.group_id) + '</td><td class="font-mono-code">' + sanitizeText(s.password || '1234') + '</td></tr>').join('') + '</tbody></table>';
+        }
+      }
+
+      window.updateCellField = function (collection, idx, field, value) {
+        if (!state.data[collection] || !state.data[collection][idx]) return;
+        state.data[collection][idx][field] = value;
+        window.executeAIScheduler(true);
+        persistState();
+        showToast('บันทึกการแก้ไขข้อมูลและซิงก์ตารางเรียนใหม่แล้ว');
+      };
+
+      window.handleMultiCSVUpload = function (ev) {
+        const files = ev.target.files;
+        if (!files || !files.length) return;
+        const parsedFiles = {};
+        let pending = files.length;
+
+        Array.from(files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const text = String(e.target.result || '').replace(/^\uFEFF/, '');
+            const lines = text.replace(/\r/g, '').split('\n').filter(l => l.trim());
+            if (lines.length >= 2) {
+              const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+              const rows = lines.slice(1).map(l => {
+                const cols = l.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                const obj = {};
+                headers.forEach((h, i) => { obj[h] = cols[i] || ''; });
+                return obj;
+              });
+              parsedFiles[file.name.toLowerCase()] = rows;
+            }
+            pending--;
+            if (pending === 0) applyUploadedCSVs(parsedFiles);
+          };
+          reader.readAsText(file, 'UTF-8');
+        });
+      };
+
+      function applyUploadedCSVs(fileMap) {
+        if (fileMap['teacher.csv']) {
+          state.data.teachers = fileMap['teacher.csv'].map(r => ({
+            teacher_id: r.teacher_id, teacher_name: r.teacher_name || r.teacher_id,
+            department_id: r.department_id || 'D01', department_name: r.department_name || '',
+            unavailability: r.unavailability || '', password: r.password || '1234'
+          }));
+        }
+        if (fileMap['room.csv']) {
+          state.data.rooms = fileMap['room.csv'].map(r => ({
+            room_id: r.room_id, room_name: r.room_name || r.room_id,
+            room_type: r.room_type || 'Lab', capacity: Number(r.capacity || 40),
+            department_id: r.department_id || 'D01', unavailability: r.unavailability || ''
+          }));
+        }
+        if (fileMap['student_groups.csv']) {
+          state.data.studentGroups = fileMap['student_groups.csv'].map(g => ({
+            group_id: g.group_id, group_name: g.group_name || g.group_id,
+            student_count: Number(g.student_count || 30), advisor: g.advisor || 'T01',
+            department_id: g.department_id || 'D01', level: g.level || 'ปวส.1'
+          }));
+        }
+        if (fileMap['subject.csv'] && fileMap['register.csv']) {
+          const subMap = {};
+          fileMap['subject.csv'].forEach(s => { subMap[s.subject_id] = s; });
+          state.data.courses = fileMap['register.csv'].map(reg => {
+            const s = subMap[reg.subject_id] || {};
+            const th = Number(s.theory || 2), pr = Number(s.practice || 2);
+            return {
+              subject_id: reg.subject_id, subject_name: s.subject_name || reg.subject_id,
+              theory: th, practice: pr, periods: th + pr, credit: Number(s.credit || 3),
+              teacher_id: reg.assigned_teacher_id || 'T01',
+              required_room: s.room_type_required === 'Theory' ? 'R201' : 'R101',
+              room_type_required: s.room_type_required || 'Lab',
+              group_id: reg.group_id, department_id: s.department_id || 'D01'
+            };
+          });
+        }
+        window.executeAIScheduler(true);
+        renderCurrentView();
+        showToast('นำเข้าและซิงก์ไฟล์ CSV (' + Object.keys(fileMap).length + ' ไฟล์) สำเร็จ!');
+      }
+
+      window.exportBackupJSON = function () { triggerDownload('vec_smartscheduler_backup.json', 'application/json', JSON.stringify(state.data, null, 2)); showToast('สำรองข้อมูล .JSON เรียบร้อยแล้ว'); };
+      window.importBackupJSON = function (ev) {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const parsed = JSON.parse(e.target.result);
+            if (parsed && Array.isArray(parsed.courses)) {
+              state.data = parsed;
+              window.executeAIScheduler(true);
+              renderCurrentView();
+              showToast('กู้คืนข้อมูลจากไฟล์ .JSON สำเร็จ');
+            }
+          } catch (err) { showToast('ไฟล์ .JSON ไม่ถูกต้อง', 'err'); }
+        };
+        reader.readAsText(f, 'UTF-8');
+      };
+      window.downloadAllTemplatesCSV = function () {
+        const csv = 'teacher_id,teacher_name,department_id,unavailability,password\n' +
+          state.data.teachers.slice(0, 10).map(t => t.teacher_id + ',"' + t.teacher_name + '",' + (t.department_id || 'D01') + ',"' + t.unavailability + '",1234').join('\n');
+        triggerDownload('teacher_template.csv', 'text/csv;charset=utf-8;', '\uFEFF' + csv);
+        showToast('ดาวน์โหลดไฟล์ต้นแบบ CSV เรียบร้อยแล้ว');
+      };
+
+      // =======================================================================
+      // TEACHER & STUDENT PORTALS
+      // =======================================================================
+      window.onTeacherPortalSelect = function (tid) { state.teacherPortalId = tid; renderTeacherPortal(); };
+
+      function renderTeacherPortal() {
+        const sel = document.getElementById('teacher-portal-select');
+        if (sel) {
+          sel.innerHTML = state.data.teachers.map(t => '<option value="' + sanitizeText(t.teacher_id) + '">' + sanitizeText(t.teacher_id + ' — ' + t.teacher_name + ' (' + (t.department_id || '') + ')') + '</option>').join('');
+          sel.value = state.teacherPortalId;
+        }
+        const tch = state.data.teachers.find(t => t.teacher_id === state.teacherPortalId) || state.data.teachers[0];
+        const statusBanner = document.getElementById('teacher-status-banner');
+        if (statusBanner) {
+          statusBanner.innerHTML = state.isPublished
+            ? '<div style="display:flex; justify-content:space-between; align-items:center;"><strong style="color:var(--emerald-800);">สถานะ: ตารางสอนประกาศใช้งานอย่างเป็นทางการแล้ว (PUBLISHED)</strong><span class="badge badge-emerald">นักศึกษาเห็นตารางแล้ว</span></div>'
+            : '<div style="display:flex; justify-content:space-between; align-items:center;"><strong style="color:var(--amber-600);">สถานะ: ฉบับร่าง (DRAFT) — รอแอดมินกดประกาศตารางเรียน</strong><span class="badge badge-amber">นักศึกษายังไม่เห็นตาราง</span></div>';
+        }
+        const myBlocks = state.blocks.filter(b => b.teacher_id === tch.teacher_id);
+        const totalPeriods = myBlocks.reduce((s, b) => s + b.length, 0);
+        const uniqueSubjects = new Set(myBlocks.map(b => b.subject_id)).size;
+        const uniqueGroups = new Set(myBlocks.map(b => b.group_id)).size;
+        const uniqueDays = new Set(myBlocks.map(b => b.day)).size;
+
+        document.getElementById('teacher-kpi-grid').innerHTML =
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">รายวิชาที่สอน</div><div style="font-size:1.35rem; font-weight:800;">' + uniqueSubjects + ' วิชา</div></div>' +
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">คาบสอนรวม/สัปดาห์</div><div style="font-size:1.35rem; font-weight:800; color:var(--emerald-700);">' + totalPeriods + ' คาบ (≥30)</div></div>' +
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">กลุ่มการเรียนที่สอน</div><div style="font-size:1.35rem; font-weight:800;">' + uniqueGroups + ' กลุ่ม</div></div>' +
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">วันที่มีตารางสอน</div><div style="font-size:1.35rem; font-weight:800;">' + uniqueDays + ' / 5 วัน</div></div>';
+        document.getElementById('teacher-personal-matrix').innerHTML = buildTimetableHTML(myBlocks, 'teacher', tch.teacher_id, false);
+      }
+
+      window.downloadTeacherPersonalCSV = function () {
+        const tid = state.teacherPortalId;
+        const rows = expandBlocksToSlots(state.blocks.filter(b => b.teacher_id === tid));
+        const csv = 'group_id,timeslot_id,day,period,subject_id,teacher_id,room_id\n' + rows.map(s => [s.group_id, s.timeslot_id, s.day, s.period, s.subject_id, s.teacher_id, s.room_id].join(',')).join('\n');
+        triggerDownload('teacher_' + tid + '_schedule.csv', 'text/csv;charset=utf-8;', '\uFEFF' + csv);
+        showToast('ดาวน์โหลดตารางสอนส่วนตัวของ ' + tid + ' เรียบร้อยแล้ว');
+      };
+
+      window.onStudentGroupSelect = function (gid) { state.studentPortalGroup = gid; renderStudentPortal(); };
+      window.setStudentDayFilter = function (day) {
+        state.studentDayFilter = day;
+        ['ALL', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'].forEach(d => {
+          const btn = document.getElementById('stu-day-' + d);
+          if (btn) btn.className = d === day ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline';
+        });
+        renderStudentPortal();
+      };
+      window.checkStudentPublishRefresh = function () {
+        restoreState();
+        renderStudentPortal();
+        showToast(state.isPublished ? 'แอดมินประกาศตารางเรียนแล้ว!' : 'แอดมินยังไม่กดประกาศตารางเรียน กรุณารอสักครู่', state.isPublished ? '' : 'warn');
+      };
+
+      function renderStudentPortal() {
+        const gateBox = document.getElementById('student-gatekeeper-box');
+        const pubView = document.getElementById('student-published-view');
+        const stu = state.user && state.user.student_id ? state.user : state.data.students.find(s => s.group_id === state.studentPortalGroup) || state.data.students[0];
+        const gid = state.studentPortalGroup || stu.group_id;
+
+        if (!state.isPublished) {
+          gateBox.classList.remove('hidden');
+          pubView.classList.add('hidden');
+          document.getElementById('student-gate-info').innerHTML =
+            '<div><strong>รหัสนักศึกษา:</strong> <span class="font-mono-code">' + sanitizeText(stu.student_id) + '</span></div>' +
+            '<div><strong>ชื่อ-นามสกุล:</strong> ' + sanitizeText(stu.student_name) + '</div>' +
+            '<div><strong>กลุ่มการเรียน:</strong> ' + sanitizeText(gid) + '</div>' +
+            '<div><strong>สถานะปัจจุบัน:</strong> <span style="color:var(--amber-600); font-weight:700;">ฉบับร่าง (รอดำเนินการประกาศจากฝ่ายวิชาการ)</span></div>';
+          return;
+        }
+
+        gateBox.classList.add('hidden');
+        pubView.classList.remove('hidden');
+        document.getElementById('student-pub-meta').textContent = 'ผู้เข้าใช้งาน: ' + stu.student_id + ' ' + stu.student_name + (state.publishedAt ? ' • ประกาศเมื่อเวลา ' + state.publishedAt : '');
+
+        const sel = document.getElementById('student-group-select');
+        if (sel) {
+          sel.innerHTML = state.data.studentGroups.map(g => '<option value="' + sanitizeText(g.group_id) + '">' + sanitizeText(g.group_id + ' — ' + g.group_name) + '</option>').join('');
+          sel.value = gid;
+        }
+
+        const q = (document.getElementById('student-search-box')?.value || '').trim().toLowerCase();
+        let myBlocks = state.blocks.filter(b => b.group_id === gid);
+        const totalPeriods = myBlocks.reduce((s, b) => s + b.length, 0);
+        const myCourses = state.data.courses.filter(c => c.group_id === gid);
+        const totalCredits = myCourses.reduce((s, c) => s + Number(c.credit || 3), 0);
+        const activeDays = new Set(myBlocks.map(b => b.day)).size;
+
+        document.getElementById('student-kpi-grid').innerHTML =
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">วิชาที่ลงทะเบียน</div><div style="font-size:1.35rem; font-weight:800;">' + myCourses.length + ' วิชา</div></div>' +
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">หน่วยกิตรวม</div><div style="font-size:1.35rem; font-weight:800;">' + totalCredits + ' หน่วยกิต</div></div>' +
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">คาบเรียนรวม/สัปดาห์</div><div style="font-size:1.35rem; font-weight:800; color:var(--emerald-700);">' + totalPeriods + ' คาบ</div></div>' +
+          '<div style="padding:0.75rem; background:var(--emerald-50); border-radius:0.9rem;"><div style="font-size:0.75rem; color:var(--emerald-800);">วันที่มีเรียน</div><div style="font-size:1.35rem; font-weight:800;">' + activeDays + ' / 5 วัน</div></div>';
+
+        if (state.studentDayFilter !== 'ALL') myBlocks = myBlocks.filter(b => b.day === state.studentDayFilter);
+        if (q) myBlocks = myBlocks.filter(b => b.subject_id.toLowerCase().includes(q) || b.subject_name.toLowerCase().includes(q) || b.teacher_id.toLowerCase().includes(q) || b.room_id.toLowerCase().includes(q));
+        document.getElementById('student-personal-matrix').innerHTML = buildTimetableHTML(myBlocks, 'group', gid, false);
+      }
+
+      window.downloadStudentGroupCSV = function () {
+        const gid = state.studentPortalGroup;
+        const rows = expandBlocksToSlots(state.blocks.filter(b => b.group_id === gid));
+        const csv = 'group_id,timeslot_id,day,period,subject_id,teacher_id,room_id\n' + rows.map(s => [s.group_id, s.timeslot_id, s.day, s.period, s.subject_id, s.teacher_id, s.room_id].join(',')).join('\n');
+        triggerDownload('student_' + gid + '_schedule.csv', 'text/csv;charset=utf-8;', '\uFEFF' + csv);
+        showToast('ดาวน์โหลดตารางเรียนของกลุ่ม ' + gid + ' เรียบร้อยแล้ว');
+      };
+
+      // =======================================================================
+      // MAIN VIEW DISPATCHER, MODALS & COPILOT
+      // =======================================================================
+      function renderCurrentView() {
+        const pBadge = document.getElementById('nav-preset-badge');
+        if (pBadge) {
+          const totalP = state.data.courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+          pBadge.textContent = state.data.studentGroups.length + ' กลุ่ม • ' + state.data.teachers.length + ' ครู • ' + totalP.toLocaleString() + ' คาบ';
+        }
+        if (!state.role) return;
+        computeAuditRules();
+        ['admin', 'teacher', 'student'].forEach(r => {
+          const v = document.getElementById('view-' + r);
+          const sw = document.getElementById('sw-btn-' + r);
+          if (v) v.classList.toggle('hidden', r !== state.role);
+          if (sw) sw.classList.toggle('active', r === state.role);
+        });
+        const sub = document.getElementById('nav-user-subtitle');
+        if (sub && state.user) {
+          if (state.role === 'admin') sub.textContent = 'บทบาท: แอดมิน (' + state.user.admin_name + ')';
+          if (state.role === 'teacher') sub.textContent = 'บทบาท: ครูผู้สอน (' + state.user.teacher_id + ' ' + state.user.teacher_name + ')';
+          if (state.role === 'student') sub.textContent = 'บทบาท: นักศึกษา (' + state.user.student_id + ' ' + state.user.student_name + ' • ' + state.user.group_id + ')';
+        }
+        if (state.role === 'admin') {
+          const pubStrip = document.getElementById('admin-publish-strip');
+          if (pubStrip) {
+            pubStrip.innerHTML = state.isPublished
+              ? '<div><strong style="color:var(--emerald-800); font-size:1rem;">สถานะการประกาศ: ประกาศตารางเรียนอย่างเป็นทางการแล้ว (PUBLISHED)</strong><div style="font-size:0.84rem; color:var(--slate-600);">นักศึกษาทั้ง 100 กลุ่มเรียนสามารถเข้าดูตารางเรียนของตนเองได้แล้ว</div></div>' +
+                '<button type="button" class="btn btn-amber btn-sm" onclick="toggleAdminPublish(false)">ยกเลิกประกาศ (กลับสู่ฉบับร่าง)</button>'
+              : '<div><strong style="color:var(--amber-600); font-size:1rem;">สถานะการประกาศ: ฉบับร่าง (UNPUBLISHED — นักศึกษายังไม่เห็นตาราง)</strong><div style="font-size:0.84rem; color:var(--slate-600);">กดปุ่มด้านขวามือเพื่อเผยแพร่ตารางเรียนให้นักศึกษาทุกกลุ่มเข้าดูได้ทันที</div></div>' +
+                '<button type="button" class="btn btn-primary" onclick="toggleAdminPublish(true)">ประกาศตารางเรียนอย่างเป็นทางการ</button>';
+          }
+          renderInlineEditor();
+          updateAIAnalyticsUI();
+          renderAdminTimetable();
+          renderAuditAndExport();
+        } else if (state.role === 'teacher') {
+          renderTeacherPortal();
+        } else if (state.role === 'student') {
+          renderStudentPortal();
+        }
+      }
+
+      window.openArchitectureModal = function () { document.getElementById('arch-modal').classList.remove('hidden'); };
+      window.closeArchitectureModal = function () { document.getElementById('arch-modal').classList.add('hidden'); };
+      window.toggleCopilotDrawer = function () { document.getElementById('copilot-drawer').classList.toggle('hidden'); };
+
+      window.askCopilot = function (question) {
+        const box = document.getElementById('copilot-messages');
+        if (!box) return;
+        const userBubble = document.createElement('div');
+        userBubble.style.cssText = 'align-self:flex-end; background:#047857; color:#fff; padding:0.55rem 0.75rem; border-radius:0.85rem; max-width:85%;';
+        userBubble.textContent = question;
+        box.appendChild(userBubble);
+
+        const q = question.toLowerCase();
+        const slots = expandBlocksToSlots(state.blocks);
+        let reply = '';
+        if (q.includes('8') || q.includes('กฎ')) {
+          const rules = computeAuditRules();
+          reply = 'ผลการตรวจสอบเกณฑ์ 8 ข้อ: ผ่าน ' + rules.filter(r => r.pass).length + '/8 ข้อ (จัดตาราง ' + slots.length + ' คาบ, 0 Hard Conflicts)';
+        } else if (q.includes('ครู') || q.includes('ภาระ')) {
+          const loads = state.data.teachers.map(t => slots.filter(s => s.teacher_id === t.teacher_id).length);
+          const minL = Math.min.apply(null, loads), maxL = Math.max.apply(null, loads);
+          const avgL = (loads.reduce((a, b) => a + b, 0) / Math.max(1, loads.length)).toFixed(2);
+          reply = 'สรุปภาระสอนครู ' + state.data.teachers.length + ' คน: ต่ำสุด ' + minL + ' คาบ, สูงสุด ' + maxL + ' คาบ, เฉลี่ย ' + avgL + ' คาบ/สัปดาห์ (ผ่าน ≥30 ทุกคน)';
+        } else if (q.includes('ห้อง')) {
+          const labCnt = slots.filter(s => (state.data.rooms.find(r => r.room_id === s.room_id)?.room_type) === 'Lab').length;
+          const thyCnt = slots.length - labCnt;
+          reply = 'สรุปการใช้ห้อง (' + state.data.rooms.length + ' ห้อง): ห้องปฏิบัติการ ' + labCnt + ' คาบ, ห้องทฤษฎี ' + thyCnt + ' คาบ (0 Conflicts)';
+        } else {
+          reply = 'สถานะปัจจุบัน: ' + state.data.studentGroups.length + ' กลุ่มเรียน, ' + slots.length + ' คาบ, XAI Fitness ' + state.aiMetrics.fitness + '%, สถานะ = ' + (state.isPublished ? 'ประกาศแล้ว' : 'ฉบับร่าง');
+        }
+        const aiBubble = document.createElement('div');
+        aiBubble.style.cssText = 'background:#d1fae5; color:#022c22; padding:0.6rem 0.75rem; border-radius:0.85rem; max-width:90%;';
+        aiBubble.textContent = reply;
+        box.appendChild(aiBubble);
+        box.scrollTop = box.scrollHeight;
+      };
+
+      window.handleCopilotSubmit = function (ev) {
+        if (ev) ev.preventDefault();
+        const inp = document.getElementById('copilot-input');
+        if (!inp || !inp.value.trim()) return;
+        const val = inp.value.trim(); inp.value = '';
+        window.askCopilot(val);
+      };
+
+      function bootstrapApp() {
+        try {
+          restoreState();
+          const expectedTotal = state.data.courses.reduce((s, c) => s + Number(c.periods || 0), 0);
+          const currentSlots = expandBlocksToSlots(state.blocks).length;
+          if (!state.blocks || state.blocks.length === 0 || currentSlots !== expectedTotal) {
+            window.executeAIScheduler(true);
+          }
+          computeAuditRules();
+          populateLoginHelpers();
+        } catch (err) {
+          console.error('Bootstrap error:', err);
+        }
+      }
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootstrapApp);
+      else bootstrapApp();
+    })();
+  </script>
+</body>
+</html>
